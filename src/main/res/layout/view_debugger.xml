@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<android.support.v4.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@android:color/transparent"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+    <!-- Bug in Android Drawerlayout, we need a left dragger -->
+    <FrameLayout
+        android:layout_gravity="left"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        />
+    <FrameLayout
+        android:orientation="vertical"
+        android:id="@+id/MenuView"
+        android:layout_gravity="right"
+        android:background="@android:color/white"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+
+       />
+    </android.support.v4.widget.DrawerLayout>
