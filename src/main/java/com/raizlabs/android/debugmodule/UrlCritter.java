@@ -58,6 +58,22 @@ public class UrlCritter implements Critter {
         mBaseUrl = baseUrlString;
     }
 
+    /**
+     * Adds a URL to the singleton list of URL data.
+     * @param url
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public UrlCritter addUrl(String url) {
+        Singleton<ArrayList> urlSingleton = new Singleton<ArrayList>(KEY_URL_SINGLETON_LIST, ArrayList.class, true);
+        ArrayList<String> urls = urlSingleton.getInstance();
+        if (!urls.contains(url)) {
+            urls.add(url);
+            urlSingleton.save();
+        }
+        return this;
+    }
+
     @Override
     public int getLayoutResId() {
         return R.layout.critter_url;
@@ -92,16 +108,6 @@ public class UrlCritter implements Critter {
         Singleton<ArrayList> urlSingleton = new Singleton<ArrayList>(KEY_URL_SINGLETON_LIST, ArrayList.class, true);
         ArrayList<String> urls = urlSingleton.getInstance();
         return urls;
-    }
-
-    @SuppressWarnings("unchecked")
-    void addUrl(String url) {
-        Singleton<ArrayList> urlSingleton = new Singleton<ArrayList>(KEY_URL_SINGLETON_LIST, ArrayList.class, true);
-        ArrayList<String> urls = urlSingleton.getInstance();
-        if (!urls.contains(url)) {
-            urls.add(url);
-            urlSingleton.save();
-        }
     }
 
     public class ViewHolder {
