@@ -2,12 +2,15 @@ package com.raizlabs.android.debugmodule;
 
 import android.view.View;
 
+import java.io.Serializable;
+
 /**
  * Author: andrewgrosner
  * Contributors: { }
- * Description:
+ * Description: The main interface for constructing a debug submenu. It enables the developer to add
+ * any kind of debug menu they wish for this application.
  */
-public interface Critter {
+public interface Critter extends Serializable {
 
     /**
      * Return the layout to inflate in the menu when the user clicks on its option.

@@ -1,12 +1,12 @@
 package com.raizlabs.android.debugmodule;
 
 import android.support.annotation.NonNull;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.raizlabs.android.connector.list.baseadapter.ListItemViewAdapter;
-import com.raizlabs.android.core.DeviceUtils;
 
 import java.util.List;
 
@@ -25,7 +25,8 @@ public class CritterAdapter extends ListItemViewAdapter<Critter, TextView> {
     @Override
     public TextView createView(int position, ViewGroup parent) {
         TextView textView = super.createView(position, parent);
-        int pad = (int) DeviceUtils.dp(10);
+        int pad = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10,
+                parent.getResources().getDisplayMetrics());
         textView.setPadding(pad, pad, pad, pad);
         textView.setGravity(Gravity.CENTER);
         textView.setTextSize(20);

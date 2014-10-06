@@ -1,3 +1,22 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        maven { url 'http://dl.bintray.com/jfrog/jfrog-jars' }
+        maven {
+            url "${artifactory_contextUrl}/android-dev"
+            credentials {
+                username = "${artifactory_user}"
+                password = "${artifactory_password}"
+            }
+        }
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:0.13.+'
+        classpath 'com.raizlabs.android-modules:RaizLibraryPlugin:1.0.9'
+        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:2.2.5"
+    }
+}
+
 apply plugin: 'com.android.library'
 apply plugin: 'RaizLibraryPlugin'
 
@@ -9,8 +28,8 @@ android {
         applicationId "com.raizlabs.android.debugmodule"
         minSdkVersion 14
         targetSdkVersion 20
-        versionCode 1
-        versionName "1.0"
+        versionName = version.replace("-SNAPSHOT", "")
+        versionCode = Integer.parseInt(versionName.replace(".", ""))
     }
     buildTypes {
         release {
@@ -21,8 +40,7 @@ android {
 }
 
 dependencies {
-    raizCompile 'AndroidSupport', 'com.android.support:support-v4:20.+'
-    raizCompile 'Connector'
-    raizCompile 'Singleton'
-    raizCompile 'Core'
+    dependency 'AndroidSupport', 'com.android.support:support-v4:20.+'
+    dependency 'Connector'
+    dependency 'Singleton'
 }

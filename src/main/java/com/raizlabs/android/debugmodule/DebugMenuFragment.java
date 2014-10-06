@@ -40,9 +40,7 @@ public class DebugMenuFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Critter critter = mAdapter.getItem(position);
-                DebugCritterFragment critterFragment = new DebugCritterFragment();
-                critterFragment.setCritter(critter);
-
+                DebugCritterFragment critterFragment = DebugCritterFragment.newInstance(critter);
                 getFragmentManager().beginTransaction()
                         .replace(R.id.MenuView, critterFragment)
                         .addToBackStack(null).commit();

@@ -14,10 +14,23 @@ import android.view.ViewGroup;
  */
 public class DebugCritterFragment extends Fragment {
 
+    static final String ARGUMENT_CRITTER = "debug_critter";
+
+    public static DebugCritterFragment newInstance(Critter critter) {
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(ARGUMENT_CRITTER, critter);
+        DebugCritterFragment debugCritterFragment = new DebugCritterFragment();
+        debugCritterFragment.setArguments(bundle);
+        return debugCritterFragment;
+    }
+
     private Critter mCritter;
 
-    public void setCritter(Critter critter) {
-        mCritter = critter;
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        mCritter = (Critter) getArguments().getSerializable(ARGUMENT_CRITTER);
     }
 
     @Override
@@ -31,4 +44,6 @@ public class DebugCritterFragment extends Fragment {
 
         mCritter.handleView(view);
     }
+
+
 }

@@ -12,7 +12,8 @@ import java.util.ArrayList;
 /**
  * Author: andrewgrosner
  * Contributors: { }
- * Description:
+ * Description: The main attacher to the {@link android.support.v4.app.FragmentActivity}. Call {@link #attach(boolean, android.support.v4.app.FragmentActivity)}
+ *  in your {@link android.support.v4.app.FragmentActivity#onCreate(android.os.Bundle)} method.
  */
 public class Debugger {
 
@@ -30,7 +31,7 @@ public class Debugger {
 
     /**
      * Attaches itself to the activity as an overlay. Call this in {@link android.app.Activity#onResume()}. Make sure to attach
-     * {@link com.raizlabs.android.debugmodule.Critter} before calling this method.
+     * {@link com.raizlabs.android.debugmodule.Critter} before calling this method. The overlay is a right sided {@link android.support.v4.widget.DrawerLayout}
      * @param configDebug Pass in the {@link com.raizlabs.android.debugmodule.BuildConfig#DEBUG} flag to mark this as a debug build
      * @param activity The activity to attach to
      */
