@@ -12,7 +12,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:0.13.+'
-        classpath 'com.raizlabs.android-modules:libraryplugin:1.0.10'
+        classpath 'com.raizlabs.android-modules:libraryplugin:1.0.12'
         classpath 'com.raizlabs.android-modules:artifactorypublisher:1.0.0'
         classpath "org.jfrog.buildinfo:build-info-extractor-gradle:2.2.5"
     }
@@ -36,17 +36,13 @@ android {
 }
 
 dependencies {
-    dependency 'AndroidSupport', 'com.android.support:support-v4:20.+'
+    jarDependency 'android-support-v4', 'com.android.support:support-v4:21.+'
     dependency 'Connector'
     dependency 'Singleton'
 }
 
 artifactoryPublish.dependsOn {
     androidSourcesJar
-}
-
-dependencies {
-    jarDependency 'android-support-v4', 'com.android.support:support-v4:20.+'
 }
 
 task androidSourcesJar(type: Jar) {
