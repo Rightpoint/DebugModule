@@ -6,9 +6,11 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.util.Patterns;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -19,6 +21,7 @@ import com.raizlabs.android.connector.list.baseadapter.ListItemViewAdapter;
 import com.raizlabs.android.singleton.Singleton;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Author: andrewgrosner
@@ -28,6 +31,16 @@ import java.util.ArrayList;
  * with one the user can type in.
  */
 public class UrlCritter implements Critter {
+
+    static List<String> URL_LIST;
+
+    public static List<String> getURL_LIST() {
+        if(URL_LIST == null) {
+
+        }
+
+        return URL_LIST;
+    }
 
     static final String PREF_CURRENT_URL = "debugger_pref_current_url";
 
@@ -176,30 +189,46 @@ public class UrlCritter implements Critter {
     }
 
     /**
-     * Retrieves the list of Urls from the corresponding {@link com.raizlabs.android.singleton.Singleton}
+     * Retrieves the list of Urls from the corresponding list of urls.
      */
-    class UrlAdapter extends ListItemViewAdapter<String, TextView> {
+    class UrlAdapter extends BaseAdapter {
+
+        private List<String> mUrls;
 
         @SuppressWarnings("unchecked")
         public UrlAdapter() {
-            super(TextView.class);
             addUrl(mBaseUrl);
-            setData(getSingletonList());
+            mUrls = getSingletonList();
         }
 
-        @NonNull
         @Override
-        public TextView createView(int position, ViewGroup parent) {
-            TextView textView = super.createView(position, parent);
-            int pad = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10,
-                    parent.getResources().getDisplayMetrics());
-            textView.setPadding(pad, pad, pad, pad);
+        public int getCount() {
+            return mUrls != null ? mUrls.size() : 0;
+        }
+
+        @Override
+        public String getItem(int position) {
+            return mUrls.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            TextView textView;
+            if (convertView == null) {
+                textView = new TextView(parent.getContext());
+                int pad = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10,
+                        parent.getResources().getDisplayMetrics());
+                textView.setPadding(pad, pad, pad, pad);
+            } else {
+                textView = (TextView) convertView;
+            }
+            textView.setText(getItem(position));
             return textView;
-        }
-
-        @Override
-        public void setViewData(@NonNull TextView view, int position) {
-            view.setText(getItem(position));
         }
     }
 }

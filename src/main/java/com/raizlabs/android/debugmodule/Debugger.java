@@ -11,7 +11,6 @@ import java.util.ArrayList;
 
 /**
  * Author: andrewgrosner
- * Contributors: { }
  * Description: The main attacher to the {@link android.support.v4.app.FragmentActivity}. Call {@link #attach(boolean, android.support.v4.app.FragmentActivity)}
  *  in your {@link android.support.v4.app.FragmentActivity#onCreate(android.os.Bundle)} method.
  */

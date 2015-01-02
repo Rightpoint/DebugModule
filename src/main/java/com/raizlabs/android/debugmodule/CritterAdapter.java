@@ -1,40 +1,55 @@
 package com.raizlabs.android.debugmodule;
 
-import android.support.annotation.NonNull;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.TextView;
-
-import com.raizlabs.android.connector.list.baseadapter.ListItemViewAdapter;
 
 import java.util.List;
 
 /**
  * Author: andrewgrosner
- * Contributors: { }
- * Description:
+ * Description: The adapter of critters to display on screen
  */
-public class CritterAdapter extends ListItemViewAdapter<Critter, TextView> {
+public class CritterAdapter extends BaseAdapter {
+
+    private List<Critter> mCritterList;
 
     public CritterAdapter(List<Critter> data) {
-        super(TextView.class, data);
+        mCritterList = data;
     }
 
-    @NonNull
     @Override
-    public TextView createView(int position, ViewGroup parent) {
-        TextView textView = super.createView(position, parent);
-        int pad = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10,
-                parent.getResources().getDisplayMetrics());
-        textView.setPadding(pad, pad, pad, pad);
-        textView.setGravity(Gravity.CENTER);
-        textView.setTextSize(20);
+    public int getCount() {
+        return mCritterList != null ? mCritterList.size() : 0;
+    }
+
+    @Override
+    public Critter getItem(int position) {
+        return mCritterList.get(position);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        TextView textView;
+        if (convertView == null) {
+            textView = new TextView(parent.getContext());
+            int pad = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10,
+                    parent.getResources().getDisplayMetrics());
+            textView.setPadding(pad, pad, pad, pad);
+            textView.setGravity(Gravity.CENTER);
+            textView.setTextSize(20);
+        } else {
+            textView = (TextView) convertView;
+        }
+        textView.setText(getItem(position).getName());
         return textView;
-    }
-
-    @Override
-    public void setViewData(@NonNull TextView view, int position) {
-        view.setText(getItem(position).getName());
     }
 }

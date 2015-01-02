@@ -11,8 +11,7 @@ import android.widget.ListView;
 
 /**
  * Author: andrewgrosner
- * Contributors: { }
- * Description:
+ * Description: The main fragment screen to display for the debugger.
  */
 public class DebugMenuFragment extends Fragment {
 
