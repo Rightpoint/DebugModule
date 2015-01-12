@@ -13,13 +13,13 @@
             android:id="@+id/urlTitleText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/critter_url_title_text" />
+            android:text="@string/DebugModule.UrlCritter.TitleText" />
 
         <TextView
             android:id="@+id/urlSpinnerText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/critter_url_spinner_text" />
+            android:text="@string/DebugModule.UrlCritter.SpinnerText" />
 
         <Spinner
             android:id="@+id/storedUrlSpinner"
@@ -28,14 +28,14 @@
 
         <EditText
             android:id="@+id/addUrlOption"
-            android:hint="@string/critter_url_add_url_hint"
+            android:hint="@string/DebugModule.UrlCritter.UrlHint"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:inputType="textUri" />
 
         <Button
             android:id="@+id/saveUrlOption"
-            android:text="@string/critter_url_save_button_text"
+            android:text="@string/DebugModule.UrlCritter.SaveButtonText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 

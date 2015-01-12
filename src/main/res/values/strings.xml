@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="debugger_menu_title">Debugger Menu</string>
+    <string name="DebugModule.MenuTitle">Debugger Menu</string>
 
-    <string name="critter_url_title_text">Select A Base URL to use for this application</string>
-    <string name="critter_url_spinner_text">Select From Existing Options</string>
-    <string name="critter_url_save_button_text">Save Url</string>
-    <string name="critter_url_add_url_hint">http://www.google.com</string>
+    <string name="DebugModule.UrlCritter.TitleText">Select A Base URL to use for this application</string>
+    <string name="DebugModule.UrlCritter.SpinnerText">Select From Existing Options</string>
+    <string name="DebugModule.UrlCritter.SaveButtonText">Save Url</string>
+    <string name="DebugModule.UrlCritter.UrlHint">http://www.google.com</string>
 </resources>

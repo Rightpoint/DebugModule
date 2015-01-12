@@ -16,14 +16,14 @@ import android.widget.Toast;
 import com.raizlabs.android.debugmodule.Critter;
 import com.raizlabs.android.debugmodule.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Author: andrewgrosner
- * Contributors: { }
- * Description: Stores a list of URLS in internal app storage. It allows you to add and test custom endpoints in an app, and select one for the app to use.
- * In your implementing application, call {@link #getBaseUrl()} for the beginning of the URL for any request and this module will (if enabled) allow you to swap the standard one
- * with one the user can type in.
+ * Description: Stores a list of URLS in internal preferences. It allows you to add and test custom endpoints in an app,
+ * and select one for the app to use. In your implementing application, call {@link #getCurrentUrl()}
+ * for the beginning of the URL for any request and this module will (if enabled) allow you to swap the standard one
+ * with one a tester can type in.
  */
 public class UrlCritter implements Critter {
 
@@ -45,29 +45,37 @@ public class UrlCritter implements Critter {
 
     private String mBaseUrl;
 
-    private UrlChangeListener mUrlChangeListener;
+    private List<UrlChangeListener> mUrlChangeListeners;
 
     private UrlManager mPrefs;
+
+    private String mName;
 
     /**
      * Constructs this class with the specified URL as a base url. We will allow the user to change URLS in the app.
      *
+     * @param name          The name of this critter that will show up in the {@link com.raizlabs.android.debugmodule.Debugger} menu.
      * @param baseUrlString
+     * @param context
      */
-    public UrlCritter(String baseUrlString, Context context) {
+    public UrlCritter(String name, String baseUrlString, Context context) {
         mBaseUrl = baseUrlString;
         mPrefs = new UrlManager(context);
+        mUrlChangeListeners = new ArrayList<>();
+        mName = name;
     }
 
     /**
      * Adds a URL to the singleton list of URL data.
-     * @param url
-     * @return
+     *
+     * @param url     The url to add to list
+     * @param context The context of application
+     * @return This instance for chaining
      */
     @SuppressWarnings("unchecked")
     public UrlCritter addUrl(String url, Context context) {
         List<String> urls = mPrefs.getUrls(context);
-        if(!urls.contains(url)) {
+        if (!urls.contains(url)) {
             urls.add(url);
             mPrefs.saveUrls(context, urls);
         }
@@ -76,7 +84,7 @@ public class UrlCritter implements Critter {
 
     @Override
     public int getLayoutResId() {
-        return R.layout.critter_url;
+        return R.layout.view_debug_module_url_critter;
     }
 
     @Override
@@ -94,17 +102,33 @@ public class UrlCritter implements Critter {
 
     @Override
     public String getName() {
-        return "Select URL Endpoint";
-    }
-
-    public void setUrlChangeListener(UrlChangeListener mUrlChangeListener) {
-        this.mUrlChangeListener = mUrlChangeListener;
+        return mName;
     }
 
     /**
-     * @return the base url to use for this application.
+     * Registers the listener for when URL changes.
+     *
+     * @param urlChangeListener The listener that gets called back
      */
-    public String getBaseUrl() {
+    public void registerUrlChangeListener(UrlChangeListener urlChangeListener) {
+        if (!mUrlChangeListeners.contains(urlChangeListener)) {
+            mUrlChangeListeners.add(urlChangeListener);
+        }
+    }
+
+    /**
+     * Un registers the listener
+     *
+     * @param urlChangeListener The listener to remove
+     */
+    public void removeUrlChangeListener(UrlChangeListener urlChangeListener) {
+        mUrlChangeListeners.remove(urlChangeListener);
+    }
+
+    /**
+     * @return the current url to use for this application.
+     */
+    public String getCurrentUrl() {
         return mPrefs.getCurrentUrl(mBaseUrl);
     }
 
@@ -125,7 +149,11 @@ public class UrlCritter implements Critter {
 
         void setupHolder(Context context) {
             final UrlAdapter urlAdapter = new UrlAdapter(context);
+
+            // prefill with current base url option
+            addUrlOption.setText(urlAdapter.getItem(urlAdapter.mUrls.indexOf(getCurrentUrl())));
             storedUrlSpinner.setAdapter(urlAdapter);
+            storedUrlSpinner.setSelection(urlAdapter.mUrls.indexOf(getCurrentUrl()));
             storedUrlSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -133,8 +161,10 @@ public class UrlCritter implements Critter {
                     mPrefs.setCurrentUrl(url);
                     Toast.makeText(view.getContext(), "Now using " + url, Toast.LENGTH_SHORT).show();
 
-                    if (mUrlChangeListener != null) {
-                        mUrlChangeListener.onUrlChanged(url);
+                    if (mUrlChangeListeners != null) {
+                        for (UrlChangeListener listener : mUrlChangeListeners) {
+                            listener.onUrlChanged(url);
+                        }
                     }
                 }
 
@@ -147,7 +177,7 @@ public class UrlCritter implements Critter {
                 @Override
                 public void onClick(View v) {
                     String url = addUrlOption.getText().toString();
-                    if (!Patterns.DOMAIN_NAME.matcher(url).matches()) {
+                    if (!Patterns.WEB_URL.matcher(url).matches()) {
                         Toast.makeText(v.getContext(), "Please enter a valid base url", Toast.LENGTH_SHORT).show();
                     } else if (!url.isEmpty()) {
                         addUrl(url, v.getContext());
@@ -163,7 +193,7 @@ public class UrlCritter implements Critter {
      */
     class UrlAdapter extends BaseAdapter {
 
-        private List<String> mUrls;
+        List<String> mUrls;
 
         @SuppressWarnings("unchecked")
         public UrlAdapter(Context context) {
