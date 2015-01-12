@@ -47,7 +47,7 @@ public class UrlCritter implements Critter {
 
     private List<UrlChangeListener> mUrlChangeListeners;
 
-    private UrlManager mPrefs;
+    private transient UrlManager mPrefs;
 
     private String mName;
 

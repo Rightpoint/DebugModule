@@ -4,7 +4,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.FrameLayout;
 
 import java.util.ArrayList;
@@ -38,13 +37,12 @@ public class Debugger {
     public void attach(FragmentActivity activity) {
         // only attach if debug build
         FrameLayout root = (FrameLayout) activity.findViewById(android.R.id.content);
-        View topLevelView = LayoutInflater.from(activity).inflate(R.layout.view_debug_module_debugger, root, false);
-        root.addView(topLevelView);
+        LayoutInflater.from(activity).inflate(R.layout.view_debug_module_debugger, root, true);
 
         // Add the debug menu
         FragmentTransaction transaction = activity.getSupportFragmentManager().beginTransaction();
         Fragment fragment = new DebugMenuFragment();
-        transaction.replace(R.id.MenuView, fragment).commit();
+        transaction.replace(R.id.view_debug_module_menu_drawer, fragment).commit();
     }
 
     /**

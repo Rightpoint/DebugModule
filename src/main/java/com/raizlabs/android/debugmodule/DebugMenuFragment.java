@@ -41,7 +41,7 @@ public class DebugMenuFragment extends Fragment {
                 Critter critter = mAdapter.getItem(position);
                 DebugCritterFragment critterFragment = DebugCritterFragment.newInstance(critter);
                 getFragmentManager().beginTransaction()
-                        .replace(R.id.MenuView, critterFragment)
+                        .replace(R.id.view_debug_module_menu_drawer, critterFragment)
                         .addToBackStack(null).commit();
             }
         });
