@@ -1,12 +1,8 @@
-package com.raizlabs.android.debugmodule;
+package com.raizlabs.android.debugmodule.url;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
 import android.util.Patterns;
 import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -17,10 +13,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.raizlabs.android.connector.list.baseadapter.ListItemViewAdapter;
-import com.raizlabs.android.singleton.Singleton;
+import com.raizlabs.android.debugmodule.Critter;
+import com.raizlabs.android.debugmodule.R;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,20 +26,6 @@ import java.util.List;
  * with one the user can type in.
  */
 public class UrlCritter implements Critter {
-
-    static List<String> URL_LIST;
-
-    public static List<String> getURL_LIST() {
-        if(URL_LIST == null) {
-
-        }
-
-        return URL_LIST;
-    }
-
-    static final String PREF_CURRENT_URL = "debugger_pref_current_url";
-
-    static final String KEY_URL_SINGLETON_LIST = "debugger_url_singleton_list";
 
     /**
      * Is called when a URL has changed
@@ -66,7 +47,7 @@ public class UrlCritter implements Critter {
 
     private UrlChangeListener mUrlChangeListener;
 
-    private SharedPreferences mPrefs;
+    private UrlManager mPrefs;
 
     /**
      * Constructs this class with the specified URL as a base url. We will allow the user to change URLS in the app.
@@ -75,7 +56,7 @@ public class UrlCritter implements Critter {
      */
     public UrlCritter(String baseUrlString, Context context) {
         mBaseUrl = baseUrlString;
-        mPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+        mPrefs = new UrlManager(context);
     }
 
     /**
@@ -84,12 +65,11 @@ public class UrlCritter implements Critter {
      * @return
      */
     @SuppressWarnings("unchecked")
-    public UrlCritter addUrl(String url) {
-        Singleton<ArrayList> urlSingleton = new Singleton<ArrayList>(KEY_URL_SINGLETON_LIST, ArrayList.class, true);
-        ArrayList<String> urls = urlSingleton.getInstance();
-        if (!urls.contains(url)) {
+    public UrlCritter addUrl(String url, Context context) {
+        List<String> urls = mPrefs.getUrls(context);
+        if(!urls.contains(url)) {
             urls.add(url);
-            urlSingleton.save();
+            mPrefs.saveUrls(context, urls);
         }
         return this;
     }
@@ -102,15 +82,14 @@ public class UrlCritter implements Critter {
     @Override
     public void handleView(View view) {
         mViewHolder = new ViewHolder(view);
-        mViewHolder.setupHolder();
+        mViewHolder.setupHolder(view.getContext());
     }
 
     /**
      * Clears all URL data from disk
      */
     public void clearData() {
-        Singleton<ArrayList> urlSingleton = new Singleton<ArrayList>(KEY_URL_SINGLETON_LIST, ArrayList.class, true);
-        urlSingleton.delete();
+        mPrefs.clear();
     }
 
     @Override
@@ -123,19 +102,10 @@ public class UrlCritter implements Critter {
     }
 
     /**
-     * Returns the base url to use for this application.
-     *
-     * @return
+     * @return the base url to use for this application.
      */
     public String getBaseUrl() {
-        return mPrefs.getString(PREF_CURRENT_URL, mBaseUrl);
-    }
-
-    @SuppressWarnings("unchecked")
-    ArrayList<String> getSingletonList() {
-        Singleton<ArrayList> urlSingleton = new Singleton<ArrayList>(KEY_URL_SINGLETON_LIST, ArrayList.class, true);
-        ArrayList<String> urls = urlSingleton.getInstance();
-        return urls;
+        return mPrefs.getCurrentUrl(mBaseUrl);
     }
 
     public class ViewHolder {
@@ -153,14 +123,14 @@ public class UrlCritter implements Critter {
             saveUrlOption = (Button) view.findViewById(R.id.saveUrlOption);
         }
 
-        void setupHolder() {
-            final UrlAdapter urlAdapter = new UrlAdapter();
+        void setupHolder(Context context) {
+            final UrlAdapter urlAdapter = new UrlAdapter(context);
             storedUrlSpinner.setAdapter(urlAdapter);
             storedUrlSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                     String url = urlAdapter.getItem(position);
-                    mPrefs.edit().putString(PREF_CURRENT_URL, url).apply();
+                    mPrefs.setCurrentUrl(url);
                     Toast.makeText(view.getContext(), "Now using " + url, Toast.LENGTH_SHORT).show();
 
                     if (mUrlChangeListener != null) {
@@ -180,7 +150,7 @@ public class UrlCritter implements Critter {
                     if (!Patterns.DOMAIN_NAME.matcher(url).matches()) {
                         Toast.makeText(v.getContext(), "Please enter a valid base url", Toast.LENGTH_SHORT).show();
                     } else if (!url.isEmpty()) {
-                        addUrl(url);
+                        addUrl(url, v.getContext());
                         Toast.makeText(v.getContext(), "Added " + url + " to list", Toast.LENGTH_SHORT).show();
                     }
                 }
@@ -196,9 +166,9 @@ public class UrlCritter implements Critter {
         private List<String> mUrls;
 
         @SuppressWarnings("unchecked")
-        public UrlAdapter() {
-            addUrl(mBaseUrl);
-            mUrls = getSingletonList();
+        public UrlAdapter(Context context) {
+            addUrl(mBaseUrl, context);
+            mUrls = mPrefs.getUrls(context);
         }
 
         @Override
