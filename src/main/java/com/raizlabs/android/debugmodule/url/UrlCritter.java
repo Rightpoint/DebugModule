@@ -1,6 +1,8 @@
 package com.raizlabs.android.debugmodule.url;
 
 import android.content.Context;
+import android.content.res.TypedArray;
+import android.support.annotation.ArrayRes;
 import android.util.Patterns;
 import android.util.TypedValue;
 import android.view.View;
@@ -113,6 +115,38 @@ public class UrlCritter implements Critter {
         }
         mPrefs.saveUrls(context, savedUrls);
         return this;
+    }
+
+    /**
+     * Adds a typed array of urls
+     *
+     * @param typedArray The typed array to use
+     * @param context    The context of application
+     * @return This instance for chaining
+     */
+    public UrlCritter addUrlTypedArray(TypedArray typedArray, Context context) {
+        List<String> savedUrls = mPrefs.getUrls(context);
+
+        int length = typedArray.length();
+        for (int i = 0; i < length; i++) {
+            String url = typedArray.getString(i);
+            if (!savedUrls.contains(url)) {
+                savedUrls.add(url);
+            }
+        }
+        mPrefs.saveUrls(context, savedUrls);
+        return this;
+    }
+
+    /**
+     * Adds a typed array of urls from the specified resource
+     *
+     * @param typedArrayRes The typed array resource to use
+     * @param context       The context of application
+     * @return This instance for chaining
+     */
+    public UrlCritter addUrlTypedArray(@ArrayRes int typedArrayRes, Context context) {
+        return addUrlTypedArray(context.getResources().obtainTypedArray(typedArrayRes), context);
     }
 
     @Override
