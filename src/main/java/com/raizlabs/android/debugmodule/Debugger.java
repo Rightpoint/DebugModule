@@ -3,7 +3,10 @@ package com.raizlabs.android.debugmodule;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.View;
+import android.view.Window;
 import android.widget.FrameLayout;
 
 import java.util.ArrayList;
@@ -11,8 +14,9 @@ import java.util.HashMap;
 
 /**
  * Author: andrewgrosner
- * Description: The main attacher to the {@link android.support.v4.app.FragmentActivity}. Call {@link #attach(boolean, android.support.v4.app.FragmentActivity)}
- * in your {@link android.support.v4.app.FragmentActivity#onCreate(android.os.Bundle)} method.
+ * Description: The main attacher to the {@link android.support.v4.app.FragmentActivity}.
+ * Call {@link #attach(android.support.v4.app.FragmentActivity)} in your
+ * {@link android.support.v4.app.FragmentActivity#onCreate(android.os.Bundle)} method.
  */
 public class Debugger {
 
@@ -37,8 +41,17 @@ public class Debugger {
     public void attach(FragmentActivity activity) {
         // only attach if debug build
         FrameLayout root = (FrameLayout) activity.findViewById(android.R.id.content);
-        LayoutInflater.from(activity).inflate(R.layout.view_debug_module_debugger, root, true);
+        View injectedView = LayoutInflater.from(activity).inflate(R.layout.view_debug_module_debugger, root, true);
 
+        if (activity.getWindow().hasFeature(Window.FEATURE_ACTION_BAR_OVERLAY)) {
+            TypedValue tv = new TypedValue();
+            int actionBarHeight = 0;
+            if (activity.getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
+                actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data, activity.getResources().getDisplayMetrics());
+            }
+            injectedView.setPadding(injectedView.getPaddingLeft(), actionBarHeight,
+                    injectedView.getPaddingRight(), injectedView.getPaddingBottom());
+        }
         // Add the debug menu
         FragmentTransaction transaction = activity.getSupportFragmentManager().beginTransaction();
         Fragment fragment = new DebugMenuFragment();
@@ -49,7 +62,7 @@ public class Debugger {
      * Attaches an array of {@link com.raizlabs.android.debugmodule.Critter} to use when we are in debug mode
      *
      * @param critterName The name of the critter
-     * @param critter A critter to attach
+     * @param critter     A critter to attach
      */
     public Debugger use(String critterName, Critter critter) {
         mCritters.put(critterName, critter);
@@ -62,5 +75,9 @@ public class Debugger {
 
     public ArrayList<Critter> getCritters() {
         return new ArrayList<>(mCritters.values());
+    }
+
+    HashMap<String, Critter> getCritterMap() {
+        return mCritters;
     }
 }

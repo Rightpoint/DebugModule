@@ -20,7 +20,7 @@ public class DebugMenuFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mAdapter = new CritterAdapter(Debugger.getInstance().getCritters());
+        mAdapter = new CritterAdapter(Debugger.getInstance().getCritterMap());
     }
 
     @Override
@@ -38,7 +38,8 @@ public class DebugMenuFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Critter critter = mAdapter.getItem(position);
+                String key = mAdapter.getItem(position);
+                Critter critter = Debugger.getInstance().getCritter(key);
                 DebugCritterFragment critterFragment = DebugCritterFragment.newInstance(critter);
                 getFragmentManager().beginTransaction()
                         .replace(R.id.view_debug_module_menu_drawer, critterFragment)

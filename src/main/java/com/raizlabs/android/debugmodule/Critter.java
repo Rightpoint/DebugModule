@@ -24,9 +24,4 @@ public interface Critter extends Serializable {
      */
     public void handleView(View view);
 
-    /**
-     * The name of component that will be displayed in the menu
-     * @return
-     */
-    public String getName();
 }

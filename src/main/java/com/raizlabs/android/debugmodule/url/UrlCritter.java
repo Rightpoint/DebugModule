@@ -49,8 +49,6 @@ public class UrlCritter implements Critter {
 
     private transient UrlManager mPrefs;
 
-    private String mName;
-
     /**
      * Constructs this class with the specified URL as a base url. We will allow the user to change URLS in the app.
      *
@@ -58,11 +56,10 @@ public class UrlCritter implements Critter {
      * @param baseUrlString
      * @param context
      */
-    public UrlCritter(String name, String baseUrlString, Context context) {
+    public UrlCritter(String baseUrlString, Context context) {
         mBaseUrl = baseUrlString;
         mPrefs = new UrlManager(context);
         mUrlChangeListeners = new ArrayList<>();
-        mName = name;
     }
 
     /**
@@ -82,6 +79,42 @@ public class UrlCritter implements Critter {
         return this;
     }
 
+    /**
+     * Adds a list of urls to the saved list
+     *
+     * @param urls    The list of urls to add
+     * @param context The context of application
+     * @return This instance for chaining
+     */
+    public UrlCritter addUrlList(List<String> urls, Context context) {
+        List<String> savedUrls = mPrefs.getUrls(context);
+        for (String url : urls) {
+            if (!savedUrls.contains(url)) {
+                savedUrls.add(url);
+            }
+        }
+        mPrefs.saveUrls(context, savedUrls);
+        return this;
+    }
+
+    /**
+     * Adds a varg of urls to the saved list
+     *
+     * @param context The context of application
+     * @param urls    The varg of urls to add
+     * @return This instance for chaining
+     */
+    public UrlCritter addUrls(Context context, String... urls) {
+        List<String> savedUrls = mPrefs.getUrls(context);
+        for (String url : urls) {
+            if (!savedUrls.contains(url)) {
+                savedUrls.add(url);
+            }
+        }
+        mPrefs.saveUrls(context, savedUrls);
+        return this;
+    }
+
     @Override
     public int getLayoutResId() {
         return R.layout.view_debug_module_url_critter;
@@ -98,11 +131,6 @@ public class UrlCritter implements Critter {
      */
     public void clearData() {
         mPrefs.clear();
-    }
-
-    @Override
-    public String getName() {
-        return mName;
     }
 
     /**

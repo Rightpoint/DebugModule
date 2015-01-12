@@ -7,7 +7,9 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Author: andrewgrosner
@@ -15,10 +17,10 @@ import java.util.List;
  */
 public class CritterAdapter extends BaseAdapter {
 
-    private List<Critter> mCritterList;
+    private ArrayList<String> mCritterList;
 
-    public CritterAdapter(List<Critter> data) {
-        mCritterList = data;
+    public CritterAdapter(Map<String, Critter> data) {
+        mCritterList = new ArrayList<>(data.keySet());
     }
 
     @Override
@@ -27,7 +29,7 @@ public class CritterAdapter extends BaseAdapter {
     }
 
     @Override
-    public Critter getItem(int position) {
+    public String getItem(int position) {
         return mCritterList.get(position);
     }
 
@@ -49,7 +51,7 @@ public class CritterAdapter extends BaseAdapter {
         } else {
             textView = (TextView) convertView;
         }
-        textView.setText(getItem(position).getName());
+        textView.setText(getItem(position));
         return textView;
     }
 }
