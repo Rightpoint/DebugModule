@@ -1,17 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<android.support.v4.widget.DrawerLayout
+<com.raizlabs.android.debugmodule.view.NoContentDrawerLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/view_debug_module_menu_drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/transparent"
     >
-    <!-- Bug in Android Drawerlayout, we need a left dragger -->
-    <FrameLayout
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        />
 
     <FrameLayout
         android:id="@+id/view_debug_module_menu_drawer"
@@ -22,4 +17,4 @@
         android:orientation="vertical"
 
         />
-</android.support.v4.widget.DrawerLayout>
+</com.raizlabs.android.debugmodule.view.NoContentDrawerLayout>

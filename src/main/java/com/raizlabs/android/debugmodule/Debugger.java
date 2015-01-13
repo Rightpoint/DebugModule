@@ -3,9 +3,12 @@ package com.raizlabs.android.debugmodule;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.DrawerLayout;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.FrameLayout;
 
@@ -32,6 +35,8 @@ public class Debugger {
 
     private HashMap<String, Critter> mCritters = new HashMap<>();
 
+    private DrawerLayout mDebugDrawer;
+
     /**
      * Attaches itself to the activity as an overlay. Call this in {@link android.app.Activity#onResume()}. Make sure to attach
      * {@link com.raizlabs.android.debugmodule.Critter} before calling this method. The overlay is a right sided {@link android.support.v4.widget.DrawerLayout}
@@ -41,21 +46,48 @@ public class Debugger {
     public void attach(FragmentActivity activity) {
         // only attach if debug build
         FrameLayout root = (FrameLayout) activity.findViewById(android.R.id.content);
-        View injectedView = LayoutInflater.from(activity).inflate(R.layout.view_debug_module_debugger, root, true);
-
+        ViewGroup contentView = (ViewGroup) LayoutInflater.from(activity).inflate(R.layout.view_debug_module_debugger, root, true);
+        for (int i = 0; i < contentView.getChildCount(); i++) {
+            View child = contentView.getChildAt(i);
+            if (child instanceof DrawerLayout && child.getId() == R.id.view_debug_module_menu_drawer_layout) {
+                mDebugDrawer = (DrawerLayout) child;
+                break;
+            }
+        }
         if (activity.getWindow().hasFeature(Window.FEATURE_ACTION_BAR_OVERLAY)) {
             TypedValue tv = new TypedValue();
             int actionBarHeight = 0;
             if (activity.getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
                 actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data, activity.getResources().getDisplayMetrics());
             }
-            injectedView.setPadding(injectedView.getPaddingLeft(), actionBarHeight,
-                    injectedView.getPaddingRight(), injectedView.getPaddingBottom());
+            mDebugDrawer.setPadding(mDebugDrawer.getPaddingLeft(), actionBarHeight,
+                    mDebugDrawer.getPaddingRight(), mDebugDrawer.getPaddingBottom());
+
+            View menuDrawer = activity.findViewById(R.id.view_debug_module_menu_drawer);
+            menuDrawer.setPadding(menuDrawer.getPaddingLeft(), actionBarHeight,
+                    menuDrawer.getPaddingRight(), menuDrawer.getPaddingBottom());
         }
         // Add the debug menu
         FragmentTransaction transaction = activity.getSupportFragmentManager().beginTransaction();
         Fragment fragment = new DebugMenuFragment();
         transaction.replace(R.id.view_debug_module_menu_drawer, fragment).commit();
+
+
+    }
+
+    /**
+     * @param activity The activity that we've attached to
+     * @return True if the debugger consumed the event such when the drawer is open
+     * and there are no more fragments on backstack.
+     */
+    public boolean onBackPressed(FragmentActivity activity) {
+        if (activity.getSupportFragmentManager().getBackStackEntryCount() == 0 && mDebugDrawer != null
+                && mDebugDrawer.isDrawerOpen(Gravity.RIGHT)) {
+            mDebugDrawer.closeDrawer(Gravity.RIGHT);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**

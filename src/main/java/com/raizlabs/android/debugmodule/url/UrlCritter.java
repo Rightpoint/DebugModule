@@ -217,16 +217,21 @@ public class UrlCritter implements Critter {
             storedUrlSpinner.setAdapter(urlAdapter);
             storedUrlSpinner.setSelection(urlAdapter.mUrls.indexOf(getCurrentUrl()));
             storedUrlSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                boolean isFirst = true;
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    String url = urlAdapter.getItem(position);
-                    mPrefs.setCurrentUrl(url);
-                    Toast.makeText(view.getContext(), "Now using " + url, Toast.LENGTH_SHORT).show();
+                    if(!isFirst) {
+                        String url = urlAdapter.getItem(position);
+                        mPrefs.setCurrentUrl(url);
+                        Toast.makeText(view.getContext(), "Now using " + url, Toast.LENGTH_SHORT).show();
 
-                    if (mUrlChangeListeners != null) {
-                        for (UrlChangeListener listener : mUrlChangeListeners) {
-                            listener.onUrlChanged(url);
+                        if (mUrlChangeListeners != null) {
+                            for (UrlChangeListener listener : mUrlChangeListeners) {
+                                listener.onUrlChanged(url);
+                            }
                         }
+                    } else {
+                        isFirst = false;
                     }
                 }
 
