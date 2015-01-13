@@ -83,3 +83,86 @@ public abstract class DebugOptionsProvider {
 
 ```
 
+#### Implement the Abstract Class or Interface in all variants
+
+For this example, we are relying on the ```buildType``` to implement the abstract class properly. First we will show what the
+```release``` version is expected to do (in ```src/release/java```):
+
+```java
+
+/**
+ * Description: Defines the implementation for an DebugOptionsProvider for release.
+ * We only return the main app endpoint.
+ */
+public class CompletedDebugOptionsProvider extends DebugOptionsProvider {
+
+    private String mUrl;
+
+    @Override
+    public void init(Context context) {
+        mUrl = context.getString(R.string.Endpoint_AppConfig);
+    }
+
+    @Override
+    public String getConfigUrl() {
+        return mUrl;
+    }
+}
+
+
+```
+
+In this case an abstract class is an advantage, since we only need to implement methods that we intend to use. Using that,
+all other methods as part of ```DebugOptionsProvider``` will do nothing.
+
+Here is the ```debug``` version of the implementation. Please note that the package name and class name **must** be the same.
+
+```java
+
+/**
+ * Description: Defines the implementation for an {@link DebugOptionsProvider}
+ * for debug. We use the debug module to show the menu.
+ */
+public class CompletedAppUrlProvider extends DebugOptionsProvider {
+
+    public static final String CRITTER_URL_NAME = "Select App Endpoint";
+
+    public static final String CRITTER_APP_NAME = "Build Information";
+
+    @Override
+    public void init(Context context) {
+        UrlCritter urlCritter = new UrlCritter(context.getString(R.string.Endpoint_AppConfig), context);
+        urlCritter.addUrlTypedArray(R.array.AppConfig_Endpoints, context);
+        Debugger.getInstance().use(CRITTER_URL_NAME, urlCritter)
+                .use(CRITTER_APP_NAME, new AppInformationCritter(BuildConfig.FLAVOR, BuildConfig.BUILD_TYPE));
+
+        urlCritter.registerUrlChangeListener(mChangeListener);
+    }
+
+    @Override
+    public void attach(FragmentActivity fragmentActivity) {
+        Debugger.getInstance().attach(fragmentActivity);
+    }
+
+    @Override
+    public String getConfigUrl() {
+        return ((UrlCritter) Debugger.getInstance().getCritter(CRITTER_URL_NAME)).getCurrentUrl();
+    }
+
+    @Override
+    public boolean onBackPressed(FragmentActivity activity) {
+        return Debugger.getInstance().onBackPressed(activity);
+    }
+
+    /**
+     * Called when URL changes
+     */
+    private final UrlCritter.UrlChangeListener mChangeListener = new UrlCritter.UrlChangeListener() {
+        @Override
+        public void onUrlChanged(String url) {
+            // URL for the app changed, do something here
+        }
+    };
+}
+
+```
