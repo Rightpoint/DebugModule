@@ -166,3 +166,48 @@ public class CompletedAppUrlProvider extends DebugOptionsProvider {
 }
 
 ```
+
+#### Inject the AbstractClass/Interface methods
+
+
+Since we created the common interface, now we implement the methods where we intended them to be used:
+
+In ```Application``` we initialize the provider:
+
+```java
+
+public class ExmapleApplication extends Application {
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        DebugOptionsProvider.getProvider().init(this);
+    }
+}
+
+
+```
+
+Create a ```BaseActivity``` so that all our activities get access to the debugger when running the ```debug``` build variant:
+
+```java
+
+public abstract class BaseActivity extends FragmentActivity {
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        DebugOptionsProvider.getProvider().attach(this);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(!DebugOptionsProvider.getProvider().onBackPressed(this)) {
+            super.onBackPressed();
+        }
+    }
+}
+
+```
+
+And that's it. Now you have a debugger that is only added to the ```.apk``` when running in ```debug``` variant! The release version will not contain this module at all if done properly.
