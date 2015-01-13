@@ -68,7 +68,7 @@ public class NoContentDrawerLayout extends DrawerLayout {
 
     /**
      * Sets the minimum touch size of the debug drawer, in pixels.
-     * @param touchSizePixels
+     * @param touchSizePixels The vertical x touch size, in pixels that passes the touches to the drawer.
      */
     public void setMinimumTouchSize(int touchSizePixels) {
         minimumTouchSize = touchSizePixels;
