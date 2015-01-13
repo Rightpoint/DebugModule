@@ -10,8 +10,8 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 /**
- * Author: andrewgrosner
- * Description: The main fragment screen to display for the debugger.
+ * Description: The main fragment screen that displays a list of critters that a tester can click on
+ * and interact with.
  */
 public class DebugMenuFragment extends Fragment {
 
@@ -39,8 +39,7 @@ public class DebugMenuFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String key = mAdapter.getItem(position);
-                Critter critter = Debugger.getInstance().getCritter(key);
-                DebugCritterFragment critterFragment = DebugCritterFragment.newInstance(critter);
+                DebugCritterFragment critterFragment = DebugCritterFragment.newInstance(key);
                 getFragmentManager().beginTransaction()
                         .replace(R.id.view_debug_module_menu_drawer, critterFragment)
                         .addToBackStack(null).commit();

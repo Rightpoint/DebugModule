@@ -12,11 +12,9 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.FrameLayout;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * Author: andrewgrosner
  * Description: The main attacher to the {@link android.support.v4.app.FragmentActivity}.
  * Call {@link #attach(android.support.v4.app.FragmentActivity)} in your
  * {@link android.support.v4.app.FragmentActivity#onCreate(android.os.Bundle)} method.
@@ -33,8 +31,14 @@ public class Debugger {
         return debugger;
     }
 
+    /**
+     * Map of critters defined by key (the name it displays)
+     */
     private HashMap<String, Critter> mCritters = new HashMap<>();
 
+    /**
+     * The drawer currently attached to the Activity
+     */
     private DrawerLayout mDebugDrawer;
 
     /**
@@ -101,14 +105,20 @@ public class Debugger {
         return this;
     }
 
+    /**
+     * @param critterName The name of the critter
+     * @return The critter given by the name. It can return null if the {@link com.raizlabs.android.debugmodule.Critter}
+     * wasn't register.
+     */
     public Critter getCritter(String critterName) {
         return mCritters.get(critterName);
     }
 
-    public ArrayList<Critter> getCritters() {
-        return new ArrayList<>(mCritters.values());
-    }
-
+    /**
+     * Internal usage only
+     *
+     * @return The map that backs these critters
+     */
     HashMap<String, Critter> getCritterMap() {
         return mCritters;
     }

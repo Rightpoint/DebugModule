@@ -8,17 +8,17 @@ import android.view.View;
 import android.view.ViewGroup;
 
 /**
- * Author: andrewgrosner
- * Contributors: { }
- * Description:
+ * Description: The fragment that contains the {@link android.view.View} defined by a {@link Critter#getLayoutResId()}.
+ *
+ * {@link com.raizlabs.android.debugmodule.Critter#handleView(android.view.View)} will be called in {@link #onViewCreated(android.view.View, android.os.Bundle)}
  */
 public class DebugCritterFragment extends Fragment {
 
     static final String ARGUMENT_CRITTER = "debug_critter";
 
-    public static DebugCritterFragment newInstance(Critter critter) {
+    public static DebugCritterFragment newInstance(String name) {
         Bundle bundle = new Bundle();
-        bundle.putSerializable(ARGUMENT_CRITTER, critter);
+        bundle.putSerializable(ARGUMENT_CRITTER, name);
         DebugCritterFragment debugCritterFragment = new DebugCritterFragment();
         debugCritterFragment.setArguments(bundle);
         return debugCritterFragment;
@@ -30,7 +30,7 @@ public class DebugCritterFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mCritter = (Critter) getArguments().getSerializable(ARGUMENT_CRITTER);
+        mCritter = Debugger.getInstance().getCritter(getArguments().getString(ARGUMENT_CRITTER, ""));
     }
 
     @Override

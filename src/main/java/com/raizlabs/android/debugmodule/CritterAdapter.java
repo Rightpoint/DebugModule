@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Author: andrewgrosner
  * Description: The adapter of critters to display on screen
  */
 public class CritterAdapter extends BaseAdapter {

@@ -5,8 +5,6 @@ import android.view.View;
 import java.io.Serializable;
 
 /**
- * Author: andrewgrosner
- * Contributors: { }
  * Description: The main interface for constructing a debug submenu. It enables the developer to add
  * any kind of debug menu they wish for this application.
  */
