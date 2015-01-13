@@ -211,3 +211,15 @@ public abstract class BaseActivity extends FragmentActivity {
 ```
 
 And that's it. Now you have a debugger that is only added to the ```.apk``` when running in ```debug``` variant! The release version will not contain this module at all if done properly.
+
+## Critters
+
+A ```Critter``` is the main interface for constructing a debug submenu. It, at its base, only requires specifying a UI. That UI drives how the tester can change properties in an application during runtime.
+
+We have provided a few default ```Critter``` for URL switching and app information display.
+
+```UrlCritter```: Displays a list of URLs that a tester can select from, providing callbacks for when those change. It also enables adding custom endpoints at runtime (which are persisted in app data). 
+
+```AppInformationCritter```: Displays package name, build type, build variant, app version, and more. 
+
+You can create your own custom ```Critter``` fairly easily and it is flexible on what goes into it. It is up to your __imagination__ on what you can configure at runtime for your app.
