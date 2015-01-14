@@ -68,7 +68,7 @@ public class MainActivity extends FragmentActivity {
     private final PreferenceChangeListener mPreferenceChangeListener = new PreferenceChangeListener() {
         @Override
         public void onPreferenceChanged(String preferenceKey, Object preferenceValue) {
-            Toast.makeText(MainActivity.this, "Preference: " + preferenceKey
+            Toast.makeText(MainActivity.this, preferenceKey
                     + " changed to: " + String.valueOf(preferenceValue), Toast.LENGTH_SHORT).show();
         }
     };

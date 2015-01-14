@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.raizlabs.android.debugmodule.R;
 
@@ -58,7 +59,11 @@ public class PreferenceView extends LinearLayout {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if(keyCode == KeyEvent.KEYCODE_ENTER) {
                     if(mBuilder != null) {
-                        mBuilder.applyPreference(mBuilder.toValue(valueChooser.getText().toString()), mChangeListener);
+                        try {
+                            mBuilder.applyPreference(mBuilder.toValue(valueChooser.getText().toString()), mChangeListener);
+                        } catch (NumberFormatException n) {
+                            Toast.makeText(v.getContext(), n.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
                     }
                     return true;
                 }
@@ -79,7 +84,7 @@ public class PreferenceView extends LinearLayout {
         } else if (type.equals(Integer.class)) {
             valueChooser.setInputType(InputType.TYPE_CLASS_NUMBER);
         } else if (type.equals(Float.class)) {
-            valueChooser.setInputType(InputType.TYPE_CLASS_NUMBER);
+            valueChooser.setInputType(InputType.TYPE_CLASS_NUMBER|InputType.TYPE_NUMBER_FLAG_DECIMAL);
         } else if (type.equals(Long.class)) {
             valueChooser.setInputType(InputType.TYPE_CLASS_NUMBER);
         } else if (type.equals(String.class)) {

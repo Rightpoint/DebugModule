@@ -194,7 +194,7 @@ public class PreferenceBuilder<PreferenceClass> {
      * @return The value
      */
     @SuppressWarnings("unchecked")
-    public PreferenceClass toValue(String text) {
+    public PreferenceClass toValue(String text) throws NumberFormatException {
         Object preference = null;
         if (mPrefType.equals(Boolean.class)) {
             preference = new Boolean(text);
