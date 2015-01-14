@@ -98,6 +98,7 @@ public class PreferenceView extends LinearLayout {
         if(mBuilder.getPrefType().equals(Boolean.class)) {
             valueChooser.setVisibility(GONE);
             booleanSwitch.setVisibility(VISIBLE);
+            booleanSwitch.setChecked((Boolean) preference.getPreference());
         } else {
             valueChooser.setText(String.valueOf(preference.getPreference()));
             booleanSwitch.setVisibility(GONE);

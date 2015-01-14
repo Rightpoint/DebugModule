@@ -25,6 +25,8 @@
     <Switch
         android:id="@+id/view_debug_module_preference_booleanSwitch"
         android:layout_width="0dp"
+        android:textOn="TRUE"
+        android:textOff="FALSE"
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:visibility="gone"/>
