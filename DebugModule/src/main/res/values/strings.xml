@@ -7,4 +7,5 @@
     <string name="DebugModule.UrlCritter.SpinnerText">Select From Existing Options</string>
     <string name="DebugModule.UrlCritter.SaveButtonText">Save Url</string>
     <string name="DebugModule.UrlCritter.UrlHint">http://www.google.com</string>
+    <string name="DebugModule.PreferenceCritter.Title">Manipulate Preferences</string>
 </resources>
