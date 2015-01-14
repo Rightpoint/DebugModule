@@ -4,13 +4,19 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
  * Description: Builds a manipulated preference object. This handles how it changes.
  */
 public class PreferenceBuilder<PreferenceClass> {
+
+    private static final List<Class> VALID_TYPES = new ArrayList<Class>(Arrays.asList(Boolean.class,
+            Integer.class, Float.class, Set.class, Long.class, String.class));
 
     /**
      * The shared preferences handle that we use.
@@ -93,6 +99,9 @@ public class PreferenceBuilder<PreferenceClass> {
      * @return This instance
      */
     public PreferenceBuilder<PreferenceClass> prefType(Class<PreferenceClass> prefType) {
+        if(!VALID_TYPES.contains(prefType)) {
+            throw new IllegalArgumentException("The specified type: " + prefType + " is not supported in preferences");
+        }
         mPrefType = prefType;
         return this;
     }
@@ -140,6 +149,7 @@ public class PreferenceBuilder<PreferenceClass> {
      */
     @SuppressWarnings("unchecked")
     public PreferenceClass getPreference() {
+        checkValues();
         Object preference = null;
         boolean isNull = (mDefaultValue == null);
         if (mPrefType.equals(Boolean.class)) {
@@ -166,6 +176,7 @@ public class PreferenceBuilder<PreferenceClass> {
      * @param preferenceValue The value of the preference to apply
      */
     public void applyPreference(PreferenceClass preferenceValue, PreferenceChangeListener listener) {
+        checkValues();
         SharedPreferences.Editor editor = edit();
         if (mPrefType.equals(Boolean.class)) {
             editor.putBoolean(mPrefKey, preferenceValue == null ? false : (Boolean) preferenceValue);
@@ -195,6 +206,7 @@ public class PreferenceBuilder<PreferenceClass> {
      */
     @SuppressWarnings("unchecked")
     public PreferenceClass toValue(String text) throws NumberFormatException {
+        checkValues();
         Object preference = null;
         if (mPrefType.equals(Boolean.class)) {
             preference = new Boolean(text);
@@ -221,6 +233,12 @@ public class PreferenceBuilder<PreferenceClass> {
 
     private SharedPreferences.Editor edit() {
         return mPrefs.edit();
+    }
+
+    private void checkValues() {
+        if(mPrefType == null || mPrefKey == null || mPrefKey.isEmpty()) {
+            throw new IllegalStateException("The preference builder must have both a type and key");
+        }
     }
 
     @Override

@@ -115,6 +115,16 @@ public class Debugger {
     }
 
     /**
+     * @param critterClazz
+     * @param critterName
+     * @param <CritterClass>
+     * @return A precasted critter
+     */
+    public <CritterClass extends Critter> CritterClass getCritter(Class<CritterClass> critterClazz, String critterName) {
+        return (CritterClass) getCritter(critterName);
+    }
+
+    /**
      * Internal usage only
      *
      * @return The map that backs these critters
