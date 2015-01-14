@@ -1,3 +1,5 @@
+[![Raizlabs Repository](http://img.shields.io/badge/Raizlabs%20Repository-1.0.0-blue.svg?style=flat)](https://github.com/Raizlabs/maven-releases)
+
 # DebugModule
 
 A powerful debug module that is fully pluggable, extendable, and very useful. It enables you to create your own ```Critter``` that contain 
@@ -6,18 +8,28 @@ all other content, making it very unobtrusive and accessible from __everywhere w
 
 ## Getting Started
 
-### Inclusion
+Add the maven repo url to your build.gradle:
+
+```groovy
+
+  repositories {
+        maven { url "https://raw.github.com/Raizlabs/maven-releases/master/releases" }
+  }
+
+```
 
 Since this is a **Debug Module**, we should __explicitly__ only include it in our debug app builds, or a specific ```buildFlavor```,
 ```buildType```, or ```buildVariant```.
 
-For now, you need to clone the project into your project and include it as a dependency:
+Add the library to the project-level build.gradle, using the 
+[AARLinkSources](https://github.com/xujiaao/AARLinkSources) plugin::
 
 ```groovy
 
-dependencies {
-  debugCompile project(':Libraries:DebugModule:DebugModule')
-}
+  dependencies {
+    debugCompile 'com.raizlabs.android:DebugModule:1.0.0'
+    aarLinkSources 'com.raizlabs.android:DebugModule:1.0.0:sources@jar'
+  }
 
 ```
 
