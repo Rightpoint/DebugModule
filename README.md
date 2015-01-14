@@ -225,3 +225,89 @@ We have provided a few default ```Critter``` for URL switching and app informati
 ```PreferenceCritter```: Enables dynamic changes to preferences you provide while the app is running. Instead of having to clear app data and reopen the app, you can change it within the app very easily.
 
 You can create your own custom ```Critter``` fairly easily and it is flexible on what goes into it. It is up to your __imagination__ on what you can configure at runtime for your app.
+
+### Critters
+
+How to register to the ```Debugger```:
+
+```java
+// we register our critters here and can use any number of ones but names must remain unique
+Debugger.getInstance().use("critterName", new UrlCritter("http://www.google.com/", this))
+    .use("anotherName", new PreferenceCritter());
+
+```
+
+How to retrieve from the ```Debugger```:
+
+```java
+
+UrlCritter urlCritter = Debugger.getInstance().getCritter(UrlCritter.class, "critterName");
+
+```
+
+### UrlCritter
+
+The purpose of this ```Critter``` is to enable dynamic, runtime switching of URLs. It provides a very basic interface that allows saving of custom, runtime picked urls or choosing from a few, pre-programmed URLs. 
+
+Adding custom, prefilled URLS can be done via the following:
+  1. ```TypedArray``` by calling ```addUrlTypedArray()```
+  2. A ```String``` using ```addUrls()```
+  3. A ```List``` of urls
+
+To listen to URL changes: 
+**Note** this is a strong reference in static memory, so please ensure to call ```unregisterUrlChangeListener()``` properly.
+
+```java
+
+UrlCritter urlCritter = Debugger().getInstance().getCritter(UrlCritter.class, "myCritter");
+urlCritter.registerUrlChangeListener(mChangeListener);
+
+
+private final UrlCritter.UrlChangeListener mChangeListener = new UrlCritter.UrlChangeListener() {
+        @Override
+        public void onUrlChanged(String url) {
+            // do something here
+        }
+    };
+
+```
+
+### Application Information Critter
+
+Simple ```Critter``` that displays:
+  1. Build flavor
+  2. ApplicationId
+  3. App version:versionName
+  4. Build Type
+  5. App Name
+
+### Preference Critter
+
+The purpose of this ```Critter``` is to enable dynamic, runtime changes to app preferences. It is particularly useful when you want to forgo clearing application memory to reperform a one-shot action. This is also enables you to test to see how the app will respond a custom value you choose.
+
+How to add preferences:
+
+```java
+
+//register with Debugger
+Debugger.getInstance().use(new PreferenceCritter());
+
+// add preferences
+pref.addPreference(new PreferenceBuilder<String>(this)
+                        .prefKey("preference_test_name")
+                        .prefType(String.class)
+                        .titleName("String example"))
+                .addPreference(new PreferenceBuilder<Boolean>(this)
+                        .prefKey("preference_boolean")
+                        .prefType(Boolean.class)
+                        .titleName("Boolean example"))
+                .addPreference(new PreferenceBuilder<Integer>(this)
+                        .prefKey("preference_int")
+                        .prefType(Integer.class)
+                        .titleName("Integer example"));
+
+```
+
+```PreferenceBuilder```: a simple wrapper around interacting with ```SharedPreferences``` that enables us to display and declare modifiable preferences easily.
+
+Now when you open the debug menu, go to this page you will see the preferences register. In order to see changes you need to type in a new value and tap enter to have its value changed.
