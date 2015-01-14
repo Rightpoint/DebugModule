@@ -8,8 +8,10 @@ import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,6 +25,8 @@ public class PreferenceView extends LinearLayout {
     TextView title;
 
     EditText valueChooser;
+
+    Switch booleanSwitch;
 
     PreferenceChangeListener mChangeListener;
 
@@ -70,25 +74,46 @@ public class PreferenceView extends LinearLayout {
                 return false;
             }
         });
+
+        booleanSwitch = (Switch) findViewById(R.id.view_debug_module_preference_booleanSwitch);
+        booleanSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(mBuilder != null && mBuilder.getPrefType().equals(Boolean.class)) {
+                    try {
+                        mBuilder.applyPreference(isChecked, mChangeListener);
+                    } catch (NumberFormatException n) {
+                        Toast.makeText(buttonView.getContext(), n.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        });
     }
 
     void populate(PreferenceBuilder preference, PreferenceChangeListener changeListener) {
         mBuilder = preference;
         mChangeListener = changeListener;
         title.setText(preference.getTitle());
-        valueChooser.setText(String.valueOf(preference.getPreference()));
 
-        Class type = preference.getPrefType();
-        if (type.equals(Boolean.class)) {
-            valueChooser.setInputType(InputType.TYPE_CLASS_TEXT);
-        } else if (type.equals(Integer.class)) {
-            valueChooser.setInputType(InputType.TYPE_CLASS_NUMBER|InputType.TYPE_NUMBER_FLAG_SIGNED);
-        } else if (type.equals(Float.class)) {
-            valueChooser.setInputType(InputType.TYPE_CLASS_NUMBER|InputType.TYPE_NUMBER_FLAG_DECIMAL|InputType.TYPE_NUMBER_FLAG_SIGNED);
-        } else if (type.equals(Long.class)) {
-            valueChooser.setInputType(InputType.TYPE_CLASS_NUMBER|InputType.TYPE_NUMBER_FLAG_SIGNED);
-        } else if (type.equals(String.class)) {
-            valueChooser.setInputType(InputType.TYPE_CLASS_TEXT);
+        if(mBuilder.getPrefType().equals(Boolean.class)) {
+            valueChooser.setVisibility(GONE);
+            booleanSwitch.setVisibility(VISIBLE);
+        } else {
+            valueChooser.setText(String.valueOf(preference.getPreference()));
+            booleanSwitch.setVisibility(GONE);
+            valueChooser.setVisibility(VISIBLE);
+            Class type = preference.getPrefType();
+            if (type.equals(Boolean.class)) {
+                valueChooser.setInputType(InputType.TYPE_CLASS_TEXT);
+            } else if (type.equals(Integer.class)) {
+                valueChooser.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_SIGNED);
+            } else if (type.equals(Float.class)) {
+                valueChooser.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL | InputType.TYPE_NUMBER_FLAG_SIGNED);
+            } else if (type.equals(Long.class)) {
+                valueChooser.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_SIGNED);
+            } else if (type.equals(String.class)) {
+                valueChooser.setInputType(InputType.TYPE_CLASS_TEXT);
+            }
         }
     }
 }
