@@ -1,1 +1,1 @@
-include ':DebugModule'
+include ':DebugModule', ':app'

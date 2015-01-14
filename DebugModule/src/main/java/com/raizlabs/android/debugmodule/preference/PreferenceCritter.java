@@ -18,6 +18,8 @@ public class PreferenceCritter implements Critter {
 
     private List<PreferenceBuilder> mPreferences = new ArrayList<>();
 
+    private List<PreferenceChangeListener> mListeners = new ArrayList<>();
+
     /**
      * Adds this {@link com.raizlabs.android.debugmodule.preference.PreferenceBuilder} to the list of manipulated preferences.
      *
@@ -30,6 +32,25 @@ public class PreferenceCritter implements Critter {
         return this;
     }
 
+    /**
+     * Registers the specified listener to receive callbacks for any preference change event.
+     *
+     * @param preferenceChangeListener The callback when preferences change
+     */
+    public void registerPreferenceChangeListener(PreferenceChangeListener preferenceChangeListener) {
+        if (!mListeners.contains(preferenceChangeListener)) {
+            mListeners.add(preferenceChangeListener);
+        }
+    }
+
+    /**
+     * Removes the listener from receiving callbacks for any preference change event
+     *
+     * @param preferenceChangeListener The callback when preferences change
+     */
+    public void unregisterPreferenceChangeListener(PreferenceChangeListener preferenceChangeListener) {
+        mListeners.remove(preferenceChangeListener);
+    }
 
     @Override
     public int getLayoutResId() {
@@ -61,7 +82,15 @@ public class PreferenceCritter implements Critter {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            return null;
+            PreferenceView view;
+            if (convertView == null) {
+                view = new PreferenceView(parent.getContext());
+            } else {
+                view = (PreferenceView) convertView;
+            }
+
+            view.populate(getItem(position));
+            return view;
         }
     }
 }

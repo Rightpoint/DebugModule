@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:orientation="horizontal"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/view_debug_module_preference_title"
+        tools:text="this_is_my_preference_key_name it is very long"
+        android:layout_weight="1"
+        android:padding="10dp"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"/>
+
+    <EditText
+        android:id="@+id/view_debug_module_preference_value"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"/>
+</LinearLayout>
