@@ -222,4 +222,6 @@ We have provided a few default ```Critter``` for URL switching and app informati
 
 ```AppInformationCritter```: Displays package name, build type, build variant, app version, and more. 
 
+```PreferenceCritter```: Enables dynamic changes to preferences you provide while the app is running. Instead of having to clear app data and reopen the app, you can change it within the app very easily.
+
 You can create your own custom ```Critter``` fairly easily and it is flexible on what goes into it. It is up to your __imagination__ on what you can configure at runtime for your app.
