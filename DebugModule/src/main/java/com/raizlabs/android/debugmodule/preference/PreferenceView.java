@@ -76,18 +76,6 @@ public class PreferenceView extends LinearLayout {
         });
 
         booleanSwitch = (Switch) findViewById(R.id.view_debug_module_preference_booleanSwitch);
-        booleanSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(mBuilder != null && mBuilder.getPrefType().equals(Boolean.class)) {
-                    try {
-                        mBuilder.applyPreference(isChecked, mChangeListener);
-                    } catch (NumberFormatException n) {
-                        Toast.makeText(buttonView.getContext(), n.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                }
-            }
-        });
     }
 
     void populate(PreferenceBuilder preference, PreferenceChangeListener changeListener) {
@@ -98,7 +86,22 @@ public class PreferenceView extends LinearLayout {
         if(mBuilder.getPrefType().equals(Boolean.class)) {
             valueChooser.setVisibility(GONE);
             booleanSwitch.setVisibility(VISIBLE);
+
+            // safe switch
+            booleanSwitch.setOnCheckedChangeListener(null);
             booleanSwitch.setChecked((Boolean) preference.getPreference());
+            booleanSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if(mBuilder != null && mBuilder.getPrefType().equals(Boolean.class)) {
+                        try {
+                            mBuilder.applyPreference(isChecked, mChangeListener);
+                        } catch (NumberFormatException n) {
+                            Toast.makeText(buttonView.getContext(), n.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+            });
         } else {
             valueChooser.setText(String.valueOf(preference.getPreference()));
             booleanSwitch.setVisibility(GONE);
