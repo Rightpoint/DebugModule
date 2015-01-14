@@ -82,11 +82,11 @@ public class PreferenceView extends LinearLayout {
         if (type.equals(Boolean.class)) {
             valueChooser.setInputType(InputType.TYPE_CLASS_TEXT);
         } else if (type.equals(Integer.class)) {
-            valueChooser.setInputType(InputType.TYPE_CLASS_NUMBER);
+            valueChooser.setInputType(InputType.TYPE_CLASS_NUMBER|InputType.TYPE_NUMBER_FLAG_SIGNED);
         } else if (type.equals(Float.class)) {
-            valueChooser.setInputType(InputType.TYPE_CLASS_NUMBER|InputType.TYPE_NUMBER_FLAG_DECIMAL);
+            valueChooser.setInputType(InputType.TYPE_CLASS_NUMBER|InputType.TYPE_NUMBER_FLAG_DECIMAL|InputType.TYPE_NUMBER_FLAG_SIGNED);
         } else if (type.equals(Long.class)) {
-            valueChooser.setInputType(InputType.TYPE_CLASS_NUMBER);
+            valueChooser.setInputType(InputType.TYPE_CLASS_NUMBER|InputType.TYPE_NUMBER_FLAG_SIGNED);
         } else if (type.equals(String.class)) {
             valueChooser.setInputType(InputType.TYPE_CLASS_TEXT);
         }
