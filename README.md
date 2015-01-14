@@ -16,7 +16,7 @@ For now, you need to clone the project into your project and include it as a dep
 ```groovy
 
 dependencies {
-  debugCompile project(':Libraries:DebugModule')
+  debugCompile project(':Libraries:DebugModule:DebugModule')
 }
 
 ```
