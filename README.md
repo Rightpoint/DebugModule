@@ -188,7 +188,7 @@ In ```Application``` we initialize the provider:
 
 ```java
 
-public class ExmapleApplication extends Application {
+public class ExampleApplication extends Application {
 
     @Override
     public void onCreate() {
