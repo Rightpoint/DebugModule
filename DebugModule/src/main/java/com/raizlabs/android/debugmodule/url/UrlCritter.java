@@ -51,6 +51,8 @@ public class UrlCritter implements Critter {
 
     private transient UrlManager mPrefs;
 
+    UrlAdapter mAdapter;
+
     /**
      * Constructs this class with the specified URL as a base url. We will allow the user to change URLS in the app.
      *
@@ -210,18 +212,18 @@ public class UrlCritter implements Critter {
         }
 
         void setupHolder(Context context) {
-            final UrlAdapter urlAdapter = new UrlAdapter(context);
+            mAdapter = new UrlAdapter(context);
 
             // prefill with current base url option
-            addUrlOption.setText(urlAdapter.getItem(urlAdapter.mUrls.indexOf(getCurrentUrl())));
-            storedUrlSpinner.setAdapter(urlAdapter);
-            storedUrlSpinner.setSelection(urlAdapter.mUrls.indexOf(getCurrentUrl()));
+            addUrlOption.setText(mAdapter.getItem(mAdapter.mUrls.indexOf(getCurrentUrl())));
+            storedUrlSpinner.setAdapter(mAdapter);
+            storedUrlSpinner.setSelection(mAdapter.mUrls.indexOf(getCurrentUrl()));
             storedUrlSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 boolean isFirst = true;
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                     if(!isFirst) {
-                        String url = urlAdapter.getItem(position);
+                        String url = mAdapter.getItem(position);
                         mPrefs.setCurrentUrl(url);
                         Toast.makeText(view.getContext(), "Now using " + url, Toast.LENGTH_SHORT).show();
 
@@ -249,6 +251,7 @@ public class UrlCritter implements Critter {
                     } else if (!url.isEmpty()) {
                         addUrl(url, v.getContext());
                         Toast.makeText(v.getContext(), "Added " + url + " to list", Toast.LENGTH_SHORT).show();
+                        mAdapter.refresh(v.getContext());
                     }
                 }
             });
@@ -266,6 +269,11 @@ public class UrlCritter implements Critter {
         public UrlAdapter(Context context) {
             addUrl(mBaseUrl, context);
             mUrls = mPrefs.getUrls(context);
+        }
+
+        public void refresh(Context context) {
+            mUrls = mPrefs.getUrls(context);
+            notifyDataSetChanged();
         }
 
         @Override

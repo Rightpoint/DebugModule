@@ -63,6 +63,15 @@ public class PreferenceCritter implements Critter {
         listView.setAdapter(new PreferenceAdapter());
     }
 
+    private final PreferenceChangeListener mInternalListener = new PreferenceChangeListener() {
+        @Override
+        public void onPreferenceChanged(String preferenceKey, Object preferenceValue) {
+            for(PreferenceChangeListener listener: mListeners) {
+                listener.onPreferenceChanged(preferenceKey, preferenceValue);
+            }
+        }
+    };
+
     private class PreferenceAdapter extends BaseAdapter {
 
         @Override
@@ -89,7 +98,7 @@ public class PreferenceCritter implements Critter {
                 view = (PreferenceView) convertView;
             }
 
-            view.populate(getItem(position));
+            view.populate(getItem(position), mInternalListener);
             return view;
         }
     }

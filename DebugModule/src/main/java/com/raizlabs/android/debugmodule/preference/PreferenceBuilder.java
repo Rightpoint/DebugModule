@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -11,12 +12,29 @@ import java.util.Set;
  */
 public class PreferenceBuilder<PreferenceClass> {
 
+    /**
+     * The shared preferences handle that we use.
+     */
     private SharedPreferences mPrefs;
 
+    /**
+     * The key to retrieve preference from.
+     */
     private String mPrefKey;
 
+    /**
+     * The name of the preference to use when display this item.
+     */
+    private String mPrefTitleName;
+
+    /**
+     * The type of preference to retrieve.
+     */
     private Class<PreferenceClass> mPrefType;
 
+    /**
+     * The default value in case preference not found.
+     */
     private PreferenceClass mDefaultValue;
 
     /**
@@ -57,23 +75,56 @@ public class PreferenceBuilder<PreferenceClass> {
         }
     }
 
+    /**
+     * The key of the preference to retrieve
+     *
+     * @param prefKey The preference key
+     * @return This instance
+     */
     public PreferenceBuilder<PreferenceClass> prefKey(String prefKey) {
         mPrefKey = prefKey;
         return this;
     }
 
+    /**
+     * The type of preference to retrieve
+     *
+     * @param prefType The type of preference
+     * @return This instance
+     */
     public PreferenceBuilder<PreferenceClass> prefType(Class<PreferenceClass> prefType) {
         mPrefType = prefType;
         return this;
     }
 
+    /**
+     * The default value to use when retrieving the preference
+     *
+     * @param defaultValue The default value
+     * @return This instance
+     */
     public PreferenceBuilder<PreferenceClass> defValue(PreferenceClass defaultValue) {
         mDefaultValue = defaultValue;
         return this;
     }
 
-    public String getPrefKey() {
-        return mPrefKey;
+    /**
+     * Specifies a name to display on screen when this preference is shown. If not specified, it will be
+     * the key name.
+     *
+     * @param titleName The title of the preference
+     * @return This instance
+     */
+    public PreferenceBuilder<PreferenceClass> titleName(String titleName) {
+        mPrefTitleName = titleName;
+        return this;
+    }
+
+    public String getTitle() {
+        if(mPrefTitleName == null || mPrefTitleName.isEmpty()) {
+            mPrefTitleName = mPrefKey;
+        }
+        return mPrefTitleName;
     }
 
     public Class<PreferenceClass> getPrefType() {
@@ -90,16 +141,19 @@ public class PreferenceBuilder<PreferenceClass> {
     @SuppressWarnings("unchecked")
     public PreferenceClass getPreference() {
         Object preference = null;
+        boolean isNull = (mDefaultValue == null);
         if (mPrefType.equals(Boolean.class)) {
-            preference = mPrefs.getBoolean(mPrefKey, (Boolean) mDefaultValue);
+            preference = mPrefs.getBoolean(mPrefKey, isNull ? false : (Boolean) mDefaultValue);
         } else if (mPrefType.equals(Integer.class)) {
-            preference = mPrefs.getInt(mPrefKey, (Integer) mDefaultValue);
+            preference = mPrefs.getInt(mPrefKey, isNull ? 0 : (Integer) mDefaultValue);
         } else if (mPrefType.equals(Set.class)) {
             preference = mPrefs.getStringSet(mPrefKey, (Set<String>) mDefaultValue);
         } else if (mPrefType.equals(Float.class)) {
-            preference = mPrefs.getFloat(mPrefKey, (Float) mDefaultValue);
+            preference = mPrefs.getFloat(mPrefKey, isNull ? 0.0f : (Float) mDefaultValue);
         } else if (mPrefType.equals(Long.class)) {
-            preference = mPrefs.getLong(mPrefKey, (Long) mDefaultValue);
+            preference = mPrefs.getLong(mPrefKey, isNull ? 0l : (Long) mDefaultValue);
+        } else if (mPrefType.equals(String.class)) {
+            preference = mPrefs.getString(mPrefKey, (String) mDefaultValue);
         }
 
 
@@ -114,22 +168,78 @@ public class PreferenceBuilder<PreferenceClass> {
     public void applyPreference(PreferenceClass preferenceValue, PreferenceChangeListener listener) {
         SharedPreferences.Editor editor = edit();
         if (mPrefType.equals(Boolean.class)) {
-            editor.putBoolean(mPrefKey, (Boolean) preferenceValue);
+            editor.putBoolean(mPrefKey, preferenceValue == null ? false : (Boolean) preferenceValue);
         } else if (mPrefType.equals(Integer.class)) {
-            editor.putInt(mPrefKey, (Integer) preferenceValue);
+            editor.putInt(mPrefKey, preferenceValue == null ? 0 : (Integer) preferenceValue);
         } else if (mPrefType.equals(Set.class)) {
             editor.putStringSet(mPrefKey, (Set<String>) preferenceValue);
         } else if (mPrefType.equals(Float.class)) {
-            editor.putFloat(mPrefKey, (Float) preferenceValue);
+            editor.putFloat(mPrefKey, preferenceValue == null ? 0.0f : (Float) preferenceValue);
         } else if (mPrefType.equals(Long.class)) {
-            editor.putLong(mPrefKey, (Long) preferenceValue);
+            editor.putLong(mPrefKey, preferenceValue == null ? 0l : (Long) preferenceValue);
+        } else if (mPrefType.equals(String.class)) {
+            editor.putString(mPrefKey, ((String) preferenceValue));
         }
         editor.apply();
 
-        listener.onPreferenceChanged(mPrefKey, preferenceValue);
+        if (listener != null) {
+            listener.onPreferenceChanged(mPrefKey, preferenceValue);
+        }
+    }
+
+    /**
+     * Turns text into the proper {@link PreferenceClass}
+     *
+     * @param text The text convert
+     * @return The value
+     */
+    @SuppressWarnings("unchecked")
+    public PreferenceClass toValue(String text) {
+        Object preference = null;
+        if (mPrefType.equals(Boolean.class)) {
+            preference = new Boolean(text);
+        } else if (mPrefType.equals(Integer.class)) {
+            preference = new Integer(text);
+        } else if (mPrefType.equals(Set.class)) {
+            preference = new HashSet<>();
+            if (text != null) {
+                String[] values = text.split(",");
+                for (String value : values) {
+                    ((HashSet) preference).add(value);
+                }
+            }
+        } else if (mPrefType.equals(Float.class)) {
+            preference = new Float(text);
+        } else if (mPrefType.equals(Long.class)) {
+            preference = new Long(text);
+        } else if (mPrefType.equals(String.class)) {
+            preference = text;
+        }
+
+        return ((PreferenceClass) preference);
     }
 
     private SharedPreferences.Editor edit() {
         return mPrefs.edit();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        PreferenceBuilder that = (PreferenceBuilder) o;
+
+        if (!mPrefKey.equals(that.mPrefKey)) return false;
+        if (!mPrefType.equals(that.mPrefType)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = mPrefKey.hashCode();
+        result = 31 * result + mPrefType.hashCode();
+        return result;
     }
 }

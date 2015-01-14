@@ -12,8 +12,6 @@ import com.raizlabs.android.debugmodule.preference.PreferenceCritter;
 
 public class MainActivity extends FragmentActivity {
 
-    static final String PREFERENCE_TEST_NAME = "preference_test_name";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -21,7 +19,26 @@ public class MainActivity extends FragmentActivity {
 
         PreferenceCritter preferenceCritter = getPreferenceCritter();
         preferenceCritter
-                .addPreference(new PreferenceBuilder<String>(this).prefKey(PREFERENCE_TEST_NAME).prefType(String.class));
+                .addPreference(new PreferenceBuilder<String>(this)
+                        .prefKey("preference_test_name")
+                        .prefType(String.class)
+                        .titleName("String example"))
+                .addPreference(new PreferenceBuilder<Boolean>(this)
+                        .prefKey("preference_boolean")
+                        .prefType(Boolean.class)
+                        .titleName("Boolean example"))
+                .addPreference(new PreferenceBuilder<Long>(this)
+                        .prefKey("preference_long")
+                        .prefType(Long.class)
+                        .titleName("Long example"))
+                .addPreference(new PreferenceBuilder<Float>(this)
+                        .prefKey("preference_float")
+                        .prefType(Float.class)
+                        .titleName("Float example"))
+                .addPreference(new PreferenceBuilder<Integer>(this)
+                        .prefKey("preference_int")
+                        .prefType(Integer.class)
+                        .titleName("Integer example"));
         preferenceCritter.registerPreferenceChangeListener(mPreferenceChangeListener);
     }
 
