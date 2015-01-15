@@ -46,7 +46,26 @@ public class DebugCritterFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         mCritter.handleView(view);
+
+        Debugger.getInstance().registerCritterRemoveListener(mRemoveListener);
     }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        Debugger.getInstance().unregisterCritterRemoveListener(mRemoveListener);
+    }
+
+    private final Debugger.CritterRemoveListener mRemoveListener = new Debugger.CritterRemoveListener() {
+        @Override
+        public void onCritterRemoved(Critter critter) {
+            if(mCritter.equals(critter) && getActivity() != null && !getActivity().isFinishing()) {
+                // no longer valid we exit this screen
+                getActivity().getSupportFragmentManager().popBackStack();
+            }
+        }
+    };
 
 
 }

@@ -22,6 +22,10 @@ public class CritterAdapter extends BaseAdapter {
         mCritterList = new ArrayList<>(data.keySet());
     }
 
+    public void remove(String critter) {
+        mCritterList.remove(critter);
+    }
+
     @Override
     public int getCount() {
         return mCritterList != null ? mCritterList.size() : 0;

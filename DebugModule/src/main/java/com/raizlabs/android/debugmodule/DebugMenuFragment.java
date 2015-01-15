@@ -45,5 +45,21 @@ public class DebugMenuFragment extends Fragment {
                         .addToBackStack(null).commit();
             }
         });
+
+        Debugger.getInstance().registerCritterRemoveListener(mRemoveListener);
     }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        Debugger.getInstance().unregisterCritterRemoveListener(mRemoveListener);
+    }
+
+    private final Debugger.CritterRemoveListener mRemoveListener = new Debugger.CritterRemoveListener() {
+        @Override
+        public void onCritterRemoved(Critter critter) {
+            mAdapter.remove(Debugger.getInstance().getCritterName(critter));
+            mAdapter.notifyDataSetChanged();
+        }
+    };
 }

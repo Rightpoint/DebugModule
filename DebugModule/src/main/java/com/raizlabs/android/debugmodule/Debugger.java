@@ -13,7 +13,10 @@ import android.widget.FrameLayout;
 
 import com.raizlabs.android.debugmodule.view.NoContentDrawerLayout;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Description: The main attacher to the {@link android.support.v4.app.FragmentActivity}.
@@ -21,6 +24,19 @@ import java.util.HashMap;
  * {@link android.support.v4.app.FragmentActivity#onCreate(android.os.Bundle)} method.
  */
 public class Debugger {
+
+    /**
+     * Called when the critter is removed from the {@link com.raizlabs.android.debugmodule.Debugger}
+     */
+    public interface CritterRemoveListener {
+
+        /**
+         * Critter was removed
+         *
+         * @param critter The critter that was removed.
+         */
+        public void onCritterRemoved(Critter critter);
+    }
 
     private static Debugger debugger;
 
@@ -51,6 +67,8 @@ public class Debugger {
      * The gravity to set the debug drawer to be placed at.
      */
     private int mDrawerGravity = Gravity.RIGHT;
+
+    private List<CritterRemoveListener> mListeners = new ArrayList<>();
 
     /**
      * Attaches itself to the activity as an overlay. Call this in {@link android.app.Activity#onResume()}. Make sure to attach
@@ -138,6 +156,26 @@ public class Debugger {
     }
 
     /**
+     * Listens for removal callbacks
+     *
+     * @param removeListener Called when critter removed
+     */
+    public void registerCritterRemoveListener(CritterRemoveListener removeListener) {
+        if (!mListeners.contains(removeListener)) {
+            mListeners.add(removeListener);
+        }
+    }
+
+    /**
+     * Cancels removal callbacks
+     *
+     * @param removeListener The callback to remove.
+     */
+    public void unregisterCritterRemoveListener(CritterRemoveListener removeListener) {
+        mListeners.remove(removeListener);
+    }
+
+    /**
      * @param activity The activity that we've attached to
      * @return True if the debugger consumed the event such when the drawer is open
      * and there are no more fragments on backstack.
@@ -184,13 +222,31 @@ public class Debugger {
     }
 
     /**
+     * @param critter The critter to find name of
+     * @return The name for the critter specified
+     */
+    public String getCritterName(Critter critter) {
+        String critterName = null;
+
+        Set<String> keySet = mCritters.keySet();
+        for (String key : keySet) {
+            if (mCritters.get(key).equals(critter)) {
+                critterName = key;
+            }
+        }
+        return critterName;
+    }
+
+    /**
      * Removes and returns the {@link com.raizlabs.android.debugmodule.Critter} that was removed.
      *
      * @param critterName The name of the critter
      * @return The removed critter
      */
     public Critter dispose(String critterName) {
-        return mCritters.remove(critterName);
+        Critter critter = mCritters.remove(critterName);
+        mInternalListener.onCritterRemoved(critter);
+        return critter;
     }
 
     /**
@@ -219,4 +275,13 @@ public class Debugger {
     HashMap<String, Critter> getCritterMap() {
         return mCritters;
     }
+
+    private final CritterRemoveListener mInternalListener = new CritterRemoveListener() {
+        @Override
+        public void onCritterRemoved(Critter critter) {
+            for (CritterRemoveListener listener : mListeners) {
+                listener.onCritterRemoved(critter);
+            }
+        }
+    };
 }
