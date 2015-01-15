@@ -174,11 +174,12 @@ public class Debugger {
     }
 
     /**
-     * @param critterClazz
-     * @param critterName
-     * @param <CritterClass>
-     * @return A precasted critter
+     * @param critterClazz The class of the critter to cast to
+     * @param critterName The name of the critter
+     * @param <CritterClass> The class that implements {@link com.raizlabs.android.debugmodule.Critter}
+     * @return A pre-casted critter
      */
+    @SuppressWarnings("unchecked")
     public <CritterClass extends Critter> CritterClass getCritter(Class<CritterClass> critterClazz, String critterName) {
         return (CritterClass) getCritter(critterName);
     }
