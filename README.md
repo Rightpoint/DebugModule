@@ -27,8 +27,8 @@ Add the library to the project-level build.gradle, using the
 ```groovy
 
   dependencies {
-    debugCompile 'com.raizlabs.android:DebugModule:1.0.0'
-    aarLinkSources 'com.raizlabs.android:DebugModule:1.0.0:sources@jar'
+    debugCompile 'com.raizlabs.android:DebugModule:1.0.2'
+    aarLinkSources 'com.raizlabs.android:DebugModule:1.0.2:sources@jar'
   }
 
 ```
