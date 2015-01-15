@@ -1,9 +1,9 @@
 package com.raizlabs.android.debugmodule;
 
+import android.support.annotation.IdRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.widget.DrawerLayout;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -87,25 +87,36 @@ public class Debugger {
                     menuDrawer.getPaddingRight(), menuDrawer.getPaddingBottom());
         }
         // Add the debug menu
+        attachDebugFragment(activity, R.id.view_debug_module_menu_drawer);
+    }
+
+    /**
+     * Attaches the {@link com.raizlabs.android.debugmodule.DebugMenuFragment} into the specified
+     * activity.
+     *
+     * @param activity   The activity to attach to
+     * @param debugFrame The container id of the layout to put the fragment into.
+     */
+    public DebugMenuFragment attachDebugFragment(FragmentActivity activity, @IdRes int debugFrame) {
         FragmentTransaction transaction = activity.getSupportFragmentManager().beginTransaction();
-        Fragment fragment = new DebugMenuFragment();
-        transaction.replace(R.id.view_debug_module_menu_drawer, fragment).commit();
-
-
+        DebugMenuFragment fragment = new DebugMenuFragment();
+        transaction.replace(debugFrame, fragment).commit();
+        return fragment;
     }
 
     /**
      * Sets what the gravity of the {@link com.raizlabs.android.debugmodule.view.NoContentDrawerLayout}
      * should be.
+     *
      * @param gravityInt The {@link android.view.Gravity} int
      */
     public void setDrawerGravity(int gravityInt) {
         mDrawerGravity = gravityInt;
 
-        if(mDebugDrawer != null) {
+        if (mDebugDrawer != null) {
             View menuDrawer = mDebugDrawer.findViewById(R.id.view_debug_module_menu_drawer);
             NoContentDrawerLayout.LayoutParams params = (NoContentDrawerLayout.LayoutParams) menuDrawer.getLayoutParams();
-            if(params == null) {
+            if (params == null) {
                 params = new NoContentDrawerLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
             }
             params.gravity = gravityInt;
@@ -115,13 +126,14 @@ public class Debugger {
 
     /**
      * Sets the minimum touch size vertically in x pixels.
+     *
      * @param minimumTouchSize The size, in pixels that we want the minimum amount of space that we
      *                         want the touch to be recognized for the drawer.
      */
     public void setMinimumTouchSize(int minimumTouchSize) {
         mMinimumTouchSize = minimumTouchSize;
 
-        if(mDebugDrawer != null && minimumTouchSize !=0) {
+        if (mDebugDrawer != null && minimumTouchSize != 0) {
             mDebugDrawer.setMinimumTouchSize(mMinimumTouchSize);
         }
     }
