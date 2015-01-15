@@ -12,6 +12,8 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.FrameLayout;
 
+import com.raizlabs.android.debugmodule.view.NoContentDrawerLayout;
+
 import java.util.HashMap;
 
 /**
@@ -39,7 +41,17 @@ public class Debugger {
     /**
      * The drawer currently attached to the Activity
      */
-    private DrawerLayout mDebugDrawer;
+    private NoContentDrawerLayout mDebugDrawer;
+
+    /**
+     * Sets the vertical x size that touches will come to the {@link com.raizlabs.android.debugmodule.view.NoContentDrawerLayout}
+     */
+    private int mMinimumTouchSize;
+
+    /**
+     * The gravity to set the debug drawer to be placed at.
+     */
+    private int mDrawerGravity = Gravity.RIGHT;
 
     /**
      * Attaches itself to the activity as an overlay. Call this in {@link android.app.Activity#onResume()}. Make sure to attach
@@ -50,11 +62,13 @@ public class Debugger {
     public void attach(FragmentActivity activity) {
         // only attach if debug build
         FrameLayout root = (FrameLayout) activity.findViewById(android.R.id.content);
-        ViewGroup contentView = (ViewGroup) LayoutInflater.from(activity).inflate(R.layout.view_debug_module_debugger, root, true);
+        ViewGroup contentView = (ViewGroup) LayoutInflater.from(activity)
+                .inflate(R.layout.view_debug_module_debugger, root, true);
         for (int i = 0; i < contentView.getChildCount(); i++) {
             View child = contentView.getChildAt(i);
-            if (child instanceof DrawerLayout && child.getId() == R.id.view_debug_module_menu_drawer_layout) {
-                mDebugDrawer = (DrawerLayout) child;
+            if (child instanceof NoContentDrawerLayout
+                    && child.getId() == R.id.view_debug_module_menu_drawer_layout) {
+                mDebugDrawer = (NoContentDrawerLayout) child;
                 break;
             }
         }
@@ -64,6 +78,7 @@ public class Debugger {
             if (activity.getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
                 actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data, activity.getResources().getDisplayMetrics());
             }
+            setDrawerGravity(mDrawerGravity);
             mDebugDrawer.setPadding(mDebugDrawer.getPaddingLeft(), actionBarHeight,
                     mDebugDrawer.getPaddingRight(), mDebugDrawer.getPaddingBottom());
 
@@ -77,6 +92,38 @@ public class Debugger {
         transaction.replace(R.id.view_debug_module_menu_drawer, fragment).commit();
 
 
+    }
+
+    /**
+     * Sets what the gravity of the {@link com.raizlabs.android.debugmodule.view.NoContentDrawerLayout}
+     * should be.
+     * @param gravityInt The {@link android.view.Gravity} int
+     */
+    public void setDrawerGravity(int gravityInt) {
+        mDrawerGravity = gravityInt;
+
+        if(mDebugDrawer != null) {
+            View menuDrawer = mDebugDrawer.findViewById(R.id.view_debug_module_menu_drawer);
+            NoContentDrawerLayout.LayoutParams params = (NoContentDrawerLayout.LayoutParams) menuDrawer.getLayoutParams();
+            if(params == null) {
+                params = new NoContentDrawerLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            }
+            params.gravity = gravityInt;
+            menuDrawer.setLayoutParams(params);
+        }
+    }
+
+    /**
+     * Sets the minimum touch size vertically in x pixels.
+     * @param minimumTouchSize The size, in pixels that we want the minimum amount of space that we
+     *                         want the touch to be recognized for the drawer.
+     */
+    public void setMinimumTouchSize(int minimumTouchSize) {
+        mMinimumTouchSize = minimumTouchSize;
+
+        if(mDebugDrawer != null && minimumTouchSize !=0) {
+            mDebugDrawer.setMinimumTouchSize(mMinimumTouchSize);
+        }
     }
 
     /**

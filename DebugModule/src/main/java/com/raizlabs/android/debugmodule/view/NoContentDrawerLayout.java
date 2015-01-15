@@ -61,7 +61,7 @@ public class NoContentDrawerLayout extends DrawerLayout {
      */
     protected void init(Context context) {
         screenWidth = context.getResources().getDisplayMetrics().widthPixels;
-        minimumTouchSize = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 50, context.getResources().getDisplayMetrics());
+        minimumTouchSize = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 25, context.getResources().getDisplayMetrics());
         drawerSide = minimumTouchSize;
         setDrawerListener(mListener);
     }

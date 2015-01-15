@@ -27,6 +27,7 @@
         android:layout_width="0dp"
         android:textOn="TRUE"
         android:textOff="FALSE"
+        android:showText="true"
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:visibility="gone"/>
