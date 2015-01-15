@@ -31,6 +31,9 @@ public class DebugCritterFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         mCritter = Debugger.getInstance().getCritter(getArguments().getString(ARGUMENT_CRITTER, ""));
+        if(mCritter == null) {
+            throw new IllegalStateException("Critter passed no longer exists. Please reload the screen");
+        }
     }
 
     @Override

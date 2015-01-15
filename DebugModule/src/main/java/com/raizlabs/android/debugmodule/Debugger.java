@@ -1,7 +1,6 @@
 package com.raizlabs.android.debugmodule;
 
 import android.support.annotation.IdRes;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.util.TypedValue;
@@ -174,14 +173,42 @@ public class Debugger {
     }
 
     /**
-     * @param critterClazz The class of the critter to cast to
-     * @param critterName The name of the critter
+     * @param critterClazz   The class of the critter to cast to
+     * @param critterName    The name of the critter
      * @param <CritterClass> The class that implements {@link com.raizlabs.android.debugmodule.Critter}
      * @return A pre-casted critter
      */
     @SuppressWarnings("unchecked")
     public <CritterClass extends Critter> CritterClass getCritter(Class<CritterClass> critterClazz, String critterName) {
         return (CritterClass) getCritter(critterName);
+    }
+
+    /**
+     * Removes and returns the {@link com.raizlabs.android.debugmodule.Critter} that was removed.
+     *
+     * @param critterName The name of the critter
+     * @return The removed critter
+     */
+    public Critter dispose(String critterName) {
+        return mCritters.remove(critterName);
+    }
+
+    /**
+     * Removes all specified critters
+     *
+     * @param critterNames The names of critters to dispose of
+     */
+    public void disposeAll(String... critterNames) {
+        for (String critterName : critterNames) {
+            dispose(critterName);
+        }
+    }
+
+    /**
+     * Clears all active critters from the debugger. You will need to reattach the debugger after.
+     */
+    public void clear() {
+        mCritters.clear();
     }
 
     /**
