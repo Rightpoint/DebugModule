@@ -1,9 +1,11 @@
-[![Raizlabs Repository](http://img.shields.io/badge/Raizlabs%20Repository-1.0.2-blue.svg?style=flat)](https://github.com/Raizlabs/maven-releases)
+[![Raizlabs Repository](http://img.shields.io/badge/Raizlabs%20Repository-1.0.3-blue.svg?style=flat)](https://github.com/Raizlabs/maven-releases)
 
 # DebugModule
 
 A powerful debug module that is fully pluggable, extendable, and very useful. It enables you to create your own ```Critter``` that contain 
-UI elements which enable you configure your application on the fly. It injects a right-facing ```DrawerLayout``` into your activity on top of
+UI elements which enable you configure your application on the fly. 
+
+It also can inject a right-facing ```DrawerLayout``` into your activity on top of
 all other content, making it very unobtrusive and accessible from __everywhere within your application__.
 
 ## Getting Started
@@ -27,8 +29,8 @@ Add the library to the project-level build.gradle, using the
 ```groovy
 
   dependencies {
-    debugCompile 'com.raizlabs.android:DebugModule:1.0.2'
-    aarLinkSources 'com.raizlabs.android:DebugModule:1.0.2:sources@jar'
+    debugCompile 'com.raizlabs.android:DebugModule:1.0.3'
+    aarLinkSources 'com.raizlabs.android:DebugModule:1.0.3:sources@jar'
   }
 
 ```
@@ -47,7 +49,7 @@ Here is an example of a provider with ```UrlCritter``` capabilities:
 
 ```java
 
-public abstract class DebugOptionsProvider {
+public abstract class AppOptionsProvider {
 
     private static CompletedAppUrlProvider provider;
 
@@ -106,7 +108,7 @@ For this example, we are relying on the ```buildType``` to implement the abstrac
  * Description: Defines the implementation for an DebugOptionsProvider for release.
  * We only return the main app endpoint.
  */
-public class CompletedDebugOptionsProvider extends DebugOptionsProvider {
+public class CompletedDebugOptionsProvider extends AppOptionsProvider {
 
     private String mUrl;
 
@@ -125,7 +127,7 @@ public class CompletedDebugOptionsProvider extends DebugOptionsProvider {
 ```
 
 In this case an abstract class is an advantage, since we only need to implement methods that we intend to use. Using that,
-all other methods as part of ```DebugOptionsProvider``` will do nothing.
+all other methods as part of ```AppOptionsProvider``` will do nothing.
 
 Here is the ```debug``` version of the implementation. Please note that the package name and class name **must** be the same.
 
@@ -135,7 +137,7 @@ Here is the ```debug``` version of the implementation. Please note that the pack
  * Description: Defines the implementation for an {@link DebugOptionsProvider}
  * for debug. We use the debug module to show the menu.
  */
-public class CompletedAppUrlProvider extends DebugOptionsProvider {
+public class CompletedAppUrlProvider extends AppOptionsProvider {
 
     public static final String CRITTER_URL_NAME = "Select App Endpoint";
 
@@ -322,4 +324,4 @@ pref.addPreference(new PreferenceBuilder<String>(this)
 
 ```PreferenceBuilder```: a simple wrapper around interacting with ```SharedPreferences``` that enables us to display and declare modifiable preferences easily.
 
-Now when you open the debug menu, go to this page you will see the preferences register. In order to see changes you need to type in a new value and tap enter to have its value changed.
+Now when you open the debug menu, go to this page, and you will see the preferences register. In order to see changes you need to type in a new value and tap **enter** to have its value changed.
