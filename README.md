@@ -257,69 +257,12 @@ UrlCritter urlCritter = Debugger.getInstance().getCritter(UrlCritter.class, "cri
 
 ```
 
-### UrlCritter
+Check out the currently included ```Critter```:
 
-The purpose of this ```Critter``` is to enable dynamic, runtime switching of URLs. It provides a very basic interface that allows saving of custom, runtime picked urls or choosing from a few, pre-programmed URLs. 
+[UrlCritter](https://github.com/Raizlabs/DebugModule/master/usage/UrlCritter.md)
 
-Adding custom, prefilled URLS can be done via the following:
-  1. ```TypedArray``` by calling ```addUrlTypedArray()```
-  2. A ```String``` using ```addUrls()```
-  3. A ```List``` of urls
+[App Information Critter](https://github.com/Raizlabs/DebugModule/master/usage/AppInformationCritter.md)
 
-To listen to URL changes: 
-**Note** this is a strong reference in static memory, so please ensure to call ```unregisterUrlChangeListener()``` properly.
+[Preference Critter](https://github.com/Raizlabs/DebugModule/master/usage/PrefCritter.md)
 
-```java
-
-UrlCritter urlCritter = Debugger().getInstance().getCritter(UrlCritter.class, "myCritter");
-urlCritter.registerUrlChangeListener(mChangeListener);
-
-
-private final UrlCritter.UrlChangeListener mChangeListener = new UrlCritter.UrlChangeListener() {
-        @Override
-        public void onUrlChanged(String url) {
-            // do something here
-        }
-    };
-
-```
-
-### Application Information Critter
-
-Simple ```Critter``` that displays:
-  1. Build flavor
-  2. ApplicationId
-  3. App version:versionName
-  4. Build Type
-  5. App Name
-
-### Preference Critter
-
-The purpose of this ```Critter``` is to enable dynamic, runtime changes to app preferences. It is particularly useful when you want to forgo clearing application memory to reperform a one-shot action. This is also enables you to test to see how the app will respond a custom value you choose.
-
-How to add preferences:
-
-```java
-
-//register with Debugger
-Debugger.getInstance().use(new PreferenceCritter());
-
-// add preferences
-pref.addPreference(new PreferenceBuilder<String>(this)
-                        .prefKey("preference_test_name")
-                        .prefType(String.class)
-                        .titleName("String example"))
-                .addPreference(new PreferenceBuilder<Boolean>(this)
-                        .prefKey("preference_boolean")
-                        .prefType(Boolean.class)
-                        .titleName("Boolean example"))
-                .addPreference(new PreferenceBuilder<Integer>(this)
-                        .prefKey("preference_int")
-                        .prefType(Integer.class)
-                        .titleName("Integer example"));
-
-```
-
-```PreferenceBuilder```: a simple wrapper around interacting with ```SharedPreferences``` that enables us to display and declare modifiable preferences easily.
-
-Now when you open the debug menu, go to this page you will see the preferences register. In order to see changes you need to type in a new value and tap enter to have its value changed.
+[Database Browser](https://github.com/Raizlabs/DebugModule/master/usage/DatabaseCritter.md)
