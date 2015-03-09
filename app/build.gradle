@@ -1,4 +1,6 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.neenbedankt.android-apt'
+apply plugin: 'com.raizlabs.griddle'
 
 android {
     compileSdkVersion 21
@@ -15,4 +17,7 @@ android {
 
 dependencies {
     compile project(debug_module_project_prefix + "DebugModule")
+
+    apt 'com.raizlabs.android:DBFlow-Compiler:1.7.0'
+    mod "com.raizlabs.android:{DBFlow-Core, DBFlow}:1.7.0"
 }

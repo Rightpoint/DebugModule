@@ -1,6 +1,7 @@
 package com.raizlabs.android.debugmodule;
 
 import android.os.Bundle;
+import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -15,16 +16,20 @@ import android.view.ViewGroup;
 public class DebugCritterFragment extends Fragment {
 
     static final String ARGUMENT_CRITTER = "debug_critter";
+    static final String ARGUMENT_LAYOUT_RES = "layout_id";
 
-    public static DebugCritterFragment newInstance(String name) {
+    public static DebugCritterFragment newInstance(String name, @LayoutRes int container) {
         Bundle bundle = new Bundle();
         bundle.putSerializable(ARGUMENT_CRITTER, name);
+        bundle.putInt(ARGUMENT_LAYOUT_RES, container);
         DebugCritterFragment debugCritterFragment = new DebugCritterFragment();
         debugCritterFragment.setArguments(bundle);
         return debugCritterFragment;
     }
 
     private Critter mCritter;
+
+    private int layoutRes;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -34,6 +39,8 @@ public class DebugCritterFragment extends Fragment {
         if(mCritter == null) {
             throw new IllegalStateException("Critter passed no longer exists. Please reload the screen");
         }
+
+        layoutRes = getArguments().getInt(ARGUMENT_LAYOUT_RES, -1);
     }
 
     @Override
@@ -45,7 +52,7 @@ public class DebugCritterFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mCritter.handleView(view);
+        mCritter.handleView(layoutRes, view);
 
         Debugger.getInstance().registerCritterRemoveListener(mRemoveListener);
     }
@@ -62,6 +69,7 @@ public class DebugCritterFragment extends Fragment {
         public void onCritterRemoved(Critter critter) {
             if(mCritter.equals(critter) && getActivity() != null && !getActivity().isFinishing()) {
                 // no longer valid we exit this screen
+                mCritter.cleanup();
                 getActivity().getSupportFragmentManager().popBackStack();
             }
         }

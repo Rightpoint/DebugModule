@@ -3,6 +3,7 @@ package com.raizlabs.android.debugmodule;
 import android.support.annotation.IdRes;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.DrawerLayout;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -116,8 +117,8 @@ public class Debugger {
      */
     public DebugMenuFragment attachDebugFragment(FragmentActivity activity, @IdRes int debugFrame) {
         FragmentTransaction transaction = activity.getSupportFragmentManager().beginTransaction();
-        DebugMenuFragment fragment = new DebugMenuFragment();
-        transaction.replace(debugFrame, fragment).commit();
+        DebugMenuFragment fragment = DebugMenuFragment.newInstance(debugFrame);
+        transaction.addToBackStack(null).replace(debugFrame, fragment).commit();
         return fragment;
     }
 
@@ -265,6 +266,10 @@ public class Debugger {
      */
     public void clear() {
         mCritters.clear();
+    }
+
+    public DrawerLayout getDebugDrawer() {
+        return mDebugDrawer;
     }
 
     /**

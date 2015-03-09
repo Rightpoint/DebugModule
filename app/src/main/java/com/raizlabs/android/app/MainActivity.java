@@ -2,6 +2,8 @@ package com.raizlabs.android.app;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.view.Gravity;
+import android.view.View;
 import android.widget.Toast;
 
 import com.raizlabs.android.debugmodule.Debugger;
@@ -40,12 +42,26 @@ public class MainActivity extends FragmentActivity {
                         .prefType(Integer.class)
                         .titleName("Integer example"));
         preferenceCritter.registerPreferenceChangeListener(mPreferenceChangeListener);
+
+
     }
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         Debugger.getInstance().attach(this);
+        findViewById(R.id.openDrawer).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Debugger.getInstance().getDebugDrawer().openDrawer(Gravity.RIGHT);
+            }
+        });
+        findViewById(R.id.openFragment).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Debugger.getInstance().attachDebugFragment(MainActivity.this, R.id.content);
+            }
+        });
     }
 
     @Override

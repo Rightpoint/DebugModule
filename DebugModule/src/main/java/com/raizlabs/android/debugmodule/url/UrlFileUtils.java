@@ -42,4 +42,8 @@ public class UrlFileUtils {
             e.printStackTrace();
         }
     }
+
+    public static void clearUrls(Context context) {
+        context.deleteFile(URL_FILE_NAME);
+    }
 }

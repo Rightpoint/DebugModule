@@ -3,7 +3,8 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="@dimen/Padding.Standard"
+    android:padding="@dimen/DebugModule.Padding.Double"
+    android:background="@android:color/white"
     >
 
     <LinearLayout
@@ -15,31 +16,56 @@
             android:id="@+id/urlTitleText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="@android:color/black"
+            android:layout_marginTop="@dimen/DebugModule.Padding.Standard"
+            android:layout_marginBottom="@dimen/DebugModule.Padding.Standard"
+            android:textSize="@dimen/DebugModule.TextSize.Title"
             android:text="@string/DebugModule.UrlCritter.TitleText" />
+
+        <Spinner
+            android:id="@+id/storedUrlSpinner"
+            android:layout_width="match_parent"
+            android:layout_marginBottom="@dimen/DebugModule.Padding.Double"
+            android:layout_height="wrap_content" />
 
         <TextView
             android:id="@+id/urlSpinnerText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="@android:color/black"
+            android:layout_marginTop="@dimen/DebugModule.Padding.Double"
+            android:layout_marginBottom="@dimen/DebugModule.Padding.Standard"
+            android:layout_marginLeft="@dimen/DebugModule.Padding.Standard"
+            android:textSize="@dimen/DebugModule.TextSize.Label"
             android:text="@string/DebugModule.UrlCritter.SpinnerText" />
-
-        <Spinner
-            android:id="@+id/storedUrlSpinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
 
         <EditText
             android:id="@+id/addUrlOption"
             android:hint="@string/DebugModule.UrlCritter.UrlHint"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textUri" />
 
         <Button
             android:id="@+id/saveUrlOption"
             android:text="@string/DebugModule.UrlCritter.SaveButtonText"
+            android:textColor="@android:color/black"
+            android:padding="@dimen/DebugModule.Padding.Double"
+            android:layout_marginBottom="@dimen/DebugModule.Padding.Double"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/clearData"
+            android:text="@string/DebugModule.UrlCritter.ClearButtonText"
+            android:layout_marginTop="@dimen/DebugModule.Padding.Double"
+            android:background="@android:color/holo_red_dark"
+            android:padding="@dimen/DebugModule.Padding.Double"
+            android:layout_gravity="bottom"
+            android:textColor="@android:color/white"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
 
     </LinearLayout>
 

@@ -3,6 +3,7 @@ package com.raizlabs.android.debugmodule.info;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.support.annotation.LayoutRes;
 import android.view.View;
 import android.widget.TextView;
 
@@ -37,7 +38,7 @@ public class AppInformationCritter implements Critter {
     }
 
     @Override
-    public void handleView(View view) {
+    public void handleView(@LayoutRes int layoutResource, View view) {
         TextView appinformation = (TextView) view.findViewById(R.id.view_debug_module_app_information);
 
         Context context = view.getContext();
@@ -54,6 +55,11 @@ public class AppInformationCritter implements Critter {
         } catch (PackageManager.NameNotFoundException e) {
             //ignored
         }
+
+    }
+
+    @Override
+    public void cleanup() {
 
     }
 

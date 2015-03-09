@@ -12,7 +12,6 @@ public class UrlManager {
 
     static final String PREFERENCES_NAME = "UrlPreferenceManager";
 
-    static final String URL_KEY_NAME = "Urls";
     static final String PREF_CURRENT_URL = "debugger_pref_current_url";
 
     private final SharedPreferences mPreferences;
@@ -37,7 +36,7 @@ public class UrlManager {
         UrlFileUtils.saveUrls(context, urls);
     }
 
-    public void clear() {
-        mPreferences.edit().remove(URL_KEY_NAME).apply();
+    public void clear(Context context) {
+        UrlFileUtils.clearUrls(context);
     }
 }

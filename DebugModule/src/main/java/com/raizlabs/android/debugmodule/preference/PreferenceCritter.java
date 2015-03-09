@@ -1,5 +1,6 @@
 package com.raizlabs.android.debugmodule.preference;
 
+import android.support.annotation.LayoutRes;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -58,9 +59,14 @@ public class PreferenceCritter implements Critter {
     }
 
     @Override
-    public void handleView(View view) {
+    public void handleView(@LayoutRes int layoutResource, View view) {
         ListView listView = (ListView) view.findViewById(R.id.view_debug_module_preferences_listView);
         listView.setAdapter(new PreferenceAdapter());
+    }
+
+    @Override
+    public void cleanup() {
+
     }
 
     private final PreferenceChangeListener mInternalListener = new PreferenceChangeListener() {
