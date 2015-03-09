@@ -12,9 +12,7 @@ import java.io.Serializable;
 public interface Critter extends Serializable {
 
     /**
-     * Return the layout to inflate in the menu when the user clicks on its option.
-     *
-     * @return
+     * @return the layout to inflate in the menu when the user clicks on its option.
      */
     public int getLayoutResId();
 

@@ -134,7 +134,7 @@ public class DatabaseCritter implements Critter {
             TextView name;
             if (convertView == null) {
                 name = new TextView(parent.getContext());
-                name.setTextSize(TypedValue.COMPLEX_UNIT_PX, parent.getResources().getDimension(R.dimen.DebugModule_TextSize_Label));
+                name.setTextSize(TypedValue.COMPLEX_UNIT_PX, parent.getResources().getDimension(R.dimen.DebugModule_TextSize_Title));
             } else {
                 name = (TextView) convertView;
             }

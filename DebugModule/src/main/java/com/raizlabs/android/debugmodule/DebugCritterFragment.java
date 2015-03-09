@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 /**
  * Description: The fragment that contains the {@link android.view.View} defined by a {@link Critter#getLayoutResId()}.
  *
- * {@link com.raizlabs.android.debugmodule.Critter#handleView(android.view.View)} will be called in {@link #onViewCreated(android.view.View, android.os.Bundle)}
+ * {@link Critter#handleView(int, View)} will be called in {@link #onViewCreated(View, Bundle)}
  */
 public class DebugCritterFragment extends Fragment {
 
@@ -31,16 +31,29 @@ public class DebugCritterFragment extends Fragment {
 
     private int layoutRes;
 
+    private String getTitle() {
+        return getArguments().getString(ARGUMENT_CRITTER, "");
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mCritter = Debugger.getInstance().getCritter(getArguments().getString(ARGUMENT_CRITTER, ""));
+        String critterName = getTitle();
+        mCritter = Debugger.getInstance().getCritter(critterName);
         if(mCritter == null) {
             throw new IllegalStateException("Critter passed no longer exists. Please reload the screen");
         }
 
         layoutRes = getArguments().getInt(ARGUMENT_LAYOUT_RES, -1);
+
+        getActivity().setTitle(critterName);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getActivity().setTitle(getTitle());
     }
 
     @Override
