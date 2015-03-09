@@ -11,18 +11,18 @@ import com.raizlabs.android.dbflow.structure.BaseModel;
 public class ExampleModel extends BaseModel {
 
     @Column(columnType = Column.PRIMARY_KEY_AUTO_INCREMENT)
-    long id;
+    public long id;
 
     @Column
-    String name;
+    public String name;
 
     @Column
-    boolean isSet;
+    public boolean isSet;
 
     @Column
-    double duble;
+    public double duble;
 
     @Column
-    float floatie;
+    public float floatie;
 
 }
