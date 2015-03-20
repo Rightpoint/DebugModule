@@ -23,4 +23,5 @@ databaseCritter.setDatabase(FlowManager.getDatabase(AppDatabase.NAME).getWritabl
 In this example, we are using [DBFlow](https://github.com/Raizlabs/DBFlow) to retrieve the proper database.
 
 ```useBlacklist``` ignores tables that are created by the Android system, such as ```android_metadata``` and
-```sqlite_sequence```. 
+```sqlite_sequence```.
+new

@@ -74,6 +74,7 @@ public class DebugCritterFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
 
+        mCritter.cleanup();
         Debugger.getInstance().unregisterCritterRemoveListener(mRemoveListener);
     }
 

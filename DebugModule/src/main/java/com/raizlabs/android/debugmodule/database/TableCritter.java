@@ -4,7 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.LayoutRes;
-import android.support.v7.widget.GridLayoutManager;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -14,7 +14,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.raizlabs.android.debugmodule.Critter;
+import com.raizlabs.android.debugmodule.DebugCritterFragment;
+import com.raizlabs.android.debugmodule.Debugger;
 import com.raizlabs.android.debugmodule.R;
+
+import java.util.Map;
 
 import static android.database.Cursor.FIELD_TYPE_BLOB;
 import static android.database.Cursor.FIELD_TYPE_FLOAT;
@@ -33,6 +37,10 @@ public class TableCritter implements Critter {
 
     private String tableName;
 
+    TableAdapter tableAdapter;
+
+    int layoutRes;
+
     @Override
     public int getLayoutResId() {
         return R.layout.view_debug_module_table;
@@ -40,10 +48,11 @@ public class TableCritter implements Critter {
 
     @Override
     public void handleView(@LayoutRes int layoutResource, View view) {
+        layoutRes = layoutResource;
         recyclerView = (RecyclerView) view.findViewById(R.id.view_debug_module_table_list);
 
         Cursor cursor = database.query(tableName, null, null, null, null, null, null);
-        TableAdapter tableAdapter = new TableAdapter(view.getContext(), cursor);
+        tableAdapter = new TableAdapter(view.getContext(), cursor);
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
         recyclerView.setAdapter(tableAdapter);
     }
@@ -56,11 +65,40 @@ public class TableCritter implements Critter {
     @Override
     public void cleanup() {
         database = null;
+        Debugger.getInstance().dispose(tableName + "-Table");
     }
+
+    final View.OnClickListener onClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            int position = (int) v.getTag();
+            Cursor currentRow = tableAdapter.getCursor();
+            Map<String, Column> columnMap = DatabaseCritterUtils.getDbRowMap(currentRow, position);
+
+            RowCritter rowCritter = new RowCritter();
+            rowCritter.setColumnDataMap(tableName, database, columnMap);
+            String critterName = tableName + "-Row" + position;
+
+            Debugger.getInstance().use(critterName, rowCritter);
+
+            DebugCritterFragment debugCritterFragment = DebugCritterFragment.newInstance(critterName, getLayoutResId());
+
+            FragmentActivity fragmentActivity = (FragmentActivity) v.getContext();
+            fragmentActivity.getSupportFragmentManager()
+                    .beginTransaction()
+                    .addToBackStack(null)
+                    .replace(layoutRes, debugCritterFragment)
+                    .commit();
+        }
+    };
 
     private class TableAdapter extends RecyclerView.Adapter<TableAdapter.ViewHolder> {
 
         private Cursor cursor;
+
+        public Cursor getCursor() {
+            return cursor;
+        }
 
         public TableAdapter(Context context, Cursor c) {
             cursor = c;
@@ -68,7 +106,7 @@ public class TableCritter implements Critter {
 
         @Override
         public int getItemCount() {
-            return cursor.getCount()+1;
+            return cursor.getCount() + 1;
         }
 
         @Override
@@ -78,19 +116,20 @@ public class TableCritter implements Critter {
 
         @Override
         public void onBindViewHolder(ViewHolder viewHolder, int position) {
-
+            viewHolder.contentArea.setTag(position);
+            viewHolder.contentArea.setOnClickListener(onClickListener);
             viewHolder.contentArea.removeAllViews();
-            if(position == 0) {
+            if (position == 0) {
                 String[] columns = cursor.getColumnNames();
                 for (String column : columns) {
                     TextView valueDisplay = new TextView(viewHolder.itemView.getContext());
                     valueDisplay.setText(column);
-                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
                     params.weight = 1;
                     valueDisplay.setLayoutParams(params);
                     viewHolder.contentArea.addView(valueDisplay);
                 }
-            } else if (cursor.moveToPosition(position+1)) {
+            } else if (cursor.moveToPosition(position + 1)) {
                 String[] columns = cursor.getColumnNames();
                 for (String column : columns) {
                     TextView valueDisplay = new TextView(viewHolder.itemView.getContext());
@@ -116,7 +155,7 @@ public class TableCritter implements Critter {
                     }
 
                     valueDisplay.setText(String.valueOf(value));
-                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
                     params.weight = 1;
                     valueDisplay.setLayoutParams(params);
                     viewHolder.contentArea.addView(valueDisplay);
