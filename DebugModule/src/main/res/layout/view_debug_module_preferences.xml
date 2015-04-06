@@ -4,11 +4,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="@dimen/Padding.Standard"
+    android:background="@android:color/white"
+    android:padding="@dimen/DebugModule.Padding.Standard"
     >
 
     <TextView
         android:id="@+id/view_debug_module_preferences_title"
+        android:textColor="@android:color/black"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/DebugModule.PreferenceCritter.Title"/>

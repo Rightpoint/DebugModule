@@ -3,9 +3,11 @@
 
     <string name="DebugModule.MenuTitle">Debugger Menu</string>
 
-    <string name="DebugModule.UrlCritter.TitleText">Select A Base URL to use for this application</string>
-    <string name="DebugModule.UrlCritter.SpinnerText">Select From Existing Options</string>
-    <string name="DebugModule.UrlCritter.SaveButtonText">Save Url</string>
+    <string name="DebugModule.UrlCritter.TitleText">Select A URL</string>
+    <string name="DebugModule.UrlCritter.SpinnerText">Add A New One</string>
+    <string name="DebugModule.UrlCritter.SaveButtonText">Add New Url</string>
     <string name="DebugModule.UrlCritter.UrlHint">http://www.google.com</string>
     <string name="DebugModule.PreferenceCritter.Title">Manipulate Preferences</string>
+    <string name="DebugModule.UrlCritter.ClearButtonText">Clear Custom Urls</string>
+    <string name="DebugModule.TableCritter.Title">Viewing Table. Tap on a row to edit.</string>
 </resources>

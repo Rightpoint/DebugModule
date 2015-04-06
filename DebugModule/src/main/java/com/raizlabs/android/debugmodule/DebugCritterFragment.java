@@ -1,6 +1,7 @@
 package com.raizlabs.android.debugmodule;
 
 import android.os.Bundle;
+import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -10,15 +11,17 @@ import android.view.ViewGroup;
 /**
  * Description: The fragment that contains the {@link android.view.View} defined by a {@link Critter#getLayoutResId()}.
  *
- * {@link com.raizlabs.android.debugmodule.Critter#handleView(android.view.View)} will be called in {@link #onViewCreated(android.view.View, android.os.Bundle)}
+ * {@link Critter#handleView(int, View)} will be called in {@link #onViewCreated(View, Bundle)}
  */
 public class DebugCritterFragment extends Fragment {
 
     static final String ARGUMENT_CRITTER = "debug_critter";
+    static final String ARGUMENT_LAYOUT_RES = "layout_id";
 
-    public static DebugCritterFragment newInstance(String name) {
+    public static DebugCritterFragment newInstance(String name, @LayoutRes int container) {
         Bundle bundle = new Bundle();
         bundle.putSerializable(ARGUMENT_CRITTER, name);
+        bundle.putInt(ARGUMENT_LAYOUT_RES, container);
         DebugCritterFragment debugCritterFragment = new DebugCritterFragment();
         debugCritterFragment.setArguments(bundle);
         return debugCritterFragment;
@@ -26,14 +29,31 @@ public class DebugCritterFragment extends Fragment {
 
     private Critter mCritter;
 
+    private int layoutRes;
+
+    private String getTitle() {
+        return getArguments().getString(ARGUMENT_CRITTER, "");
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mCritter = Debugger.getInstance().getCritter(getArguments().getString(ARGUMENT_CRITTER, ""));
+        String critterName = getTitle();
+        mCritter = Debugger.getInstance().getCritter(critterName);
         if(mCritter == null) {
             throw new IllegalStateException("Critter passed no longer exists. Please reload the screen");
         }
+
+        layoutRes = getArguments().getInt(ARGUMENT_LAYOUT_RES, -1);
+
+        getActivity().setTitle(critterName);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getActivity().setTitle(getTitle());
     }
 
     @Override
@@ -45,7 +65,7 @@ public class DebugCritterFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mCritter.handleView(view);
+        mCritter.handleView(layoutRes, view);
 
         Debugger.getInstance().registerCritterRemoveListener(mRemoveListener);
     }
@@ -54,6 +74,7 @@ public class DebugCritterFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
 
+        mCritter.cleanup();
         Debugger.getInstance().unregisterCritterRemoveListener(mRemoveListener);
     }
 
@@ -62,6 +83,7 @@ public class DebugCritterFragment extends Fragment {
         public void onCritterRemoved(Critter critter) {
             if(mCritter.equals(critter) && getActivity() != null && !getActivity().isFinishing()) {
                 // no longer valid we exit this screen
+                mCritter.cleanup();
                 getActivity().getSupportFragmentManager().popBackStack();
             }
         }

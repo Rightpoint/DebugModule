@@ -1,8 +1,11 @@
 package com.raizlabs.android.debugmodule.url;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.res.TypedArray;
 import android.support.annotation.ArrayRes;
+import android.support.annotation.LayoutRes;
 import android.util.Patterns;
 import android.util.TypedValue;
 import android.view.View;
@@ -157,16 +160,21 @@ public class UrlCritter implements Critter {
     }
 
     @Override
-    public void handleView(View view) {
+    public void handleView(@LayoutRes int layoutResource, View view) {
         mViewHolder = new ViewHolder(view);
         mViewHolder.setupHolder(view.getContext());
+    }
+
+    @Override
+    public void cleanup() {
+
     }
 
     /**
      * Clears all URL data from disk
      */
-    public void clearData() {
-        mPrefs.clear();
+    public void clearData(Context context) {
+        mPrefs.clear(context);
     }
 
     /**
@@ -202,6 +210,7 @@ public class UrlCritter implements Critter {
         Spinner storedUrlSpinner;
         EditText addUrlOption;
         Button saveUrlOption;
+        Button clearUrlsOption;
 
         public ViewHolder(View view) {
             urlTitleText = (TextView) view.findViewWithTag(R.id.urlTitleText);
@@ -209,6 +218,7 @@ public class UrlCritter implements Critter {
             storedUrlSpinner = (Spinner) view.findViewById(R.id.storedUrlSpinner);
             addUrlOption = (EditText) view.findViewById(R.id.addUrlOption);
             saveUrlOption = (Button) view.findViewById(R.id.saveUrlOption);
+            clearUrlsOption = (Button) view.findViewById(R.id.clearData);
         }
 
         void setupHolder(Context context) {
@@ -249,10 +259,36 @@ public class UrlCritter implements Critter {
                     if (!Patterns.WEB_URL.matcher(url).matches()) {
                         Toast.makeText(v.getContext(), "Please enter a valid base url", Toast.LENGTH_SHORT).show();
                     } else if (!url.isEmpty()) {
+                        if(!mPrefs.getUrls(v.getContext()).contains(url)) {
+                            Toast.makeText(v.getContext(), "Added " + url + " to list", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(v.getContext(), "Duplicate URL entered", Toast.LENGTH_SHORT).show();
+                        }
                         addUrl(url, v.getContext());
-                        Toast.makeText(v.getContext(), "Added " + url + " to list", Toast.LENGTH_SHORT).show();
                         mAdapter.refresh(v.getContext());
                     }
+                }
+            });
+
+            clearUrlsOption.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(final View v) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext())
+                            .setTitle("Are you sure you want to clear all custom urls?")
+                            .setPositiveButton("yes", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    mPrefs.clear(v.getContext());
+                                    mAdapter.refresh(v.getContext());
+                                }
+                            })
+                            .setNegativeButton("no", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.cancel();
+                                }
+                            });
+                    builder.show();
                 }
             });
         }

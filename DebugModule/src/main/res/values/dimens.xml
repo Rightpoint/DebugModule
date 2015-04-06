@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="Padding.Standard">5dp</dimen>
+    <dimen name="DebugModule.Padding.Standard">8dp</dimen>
+    <dimen name="DebugModule.Padding.Double">16dp</dimen>
+    <dimen name="DebugModule.TextSize.Label">16sp</dimen>
+    <dimen name="DebugModule.TextSize.Title">22sp</dimen>
 </resources>

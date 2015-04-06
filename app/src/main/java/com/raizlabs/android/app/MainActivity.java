@@ -2,12 +2,18 @@ package com.raizlabs.android.app;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.view.Gravity;
+import android.view.View;
 import android.widget.Toast;
 
+import com.raizlabs.android.app.dbflow.ExampleModel;
+import com.raizlabs.android.app.dbflow.LargeExampleModel;
 import com.raizlabs.android.debugmodule.Debugger;
 import com.raizlabs.android.debugmodule.preference.PreferenceBuilder;
 import com.raizlabs.android.debugmodule.preference.PreferenceChangeListener;
 import com.raizlabs.android.debugmodule.preference.PreferenceCritter;
+
+import java.util.Random;
 
 
 public class MainActivity extends FragmentActivity {
@@ -40,12 +46,44 @@ public class MainActivity extends FragmentActivity {
                         .prefType(Integer.class)
                         .titleName("Integer example"));
         preferenceCritter.registerPreferenceChangeListener(mPreferenceChangeListener);
+
+
     }
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         Debugger.getInstance().attach(this);
+        findViewById(R.id.openDrawer).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Debugger.getInstance().getDebugDrawer().openDrawer(Gravity.RIGHT);
+            }
+        });
+        findViewById(R.id.openFragment).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Debugger.getInstance().attachDebugFragment(MainActivity.this, R.id.content);
+            }
+        });
+
+        ExampleModel model = new ExampleModel();
+        model.name = "Test";
+        model.duble = 0.5d;
+        model.floatie = 0.75f;
+        model.isSet = new Random(System.currentTimeMillis()).nextBoolean();
+        model.save(false);
+
+        LargeExampleModel largeExampleModel = new LargeExampleModel();
+        largeExampleModel.name = "Test";
+        largeExampleModel.duble = 0.5d;
+        largeExampleModel.floatie = 0.75f;
+        largeExampleModel.isSet = new Random(System.currentTimeMillis()).nextBoolean();
+        byte[] buffer = new byte[new Random(System.currentTimeMillis()).nextInt(20)];
+        new Random(System.currentTimeMillis()).nextBytes(buffer);
+        largeExampleModel.anotherName = new String(buffer);
+        largeExampleModel.anotherName2 = "wwowowowo";
+        largeExampleModel.save(false);
     }
 
     @Override
