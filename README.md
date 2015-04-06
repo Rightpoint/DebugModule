@@ -1,34 +1,34 @@
-[![Raizlabs Repository](http://img.shields.io/badge/Raizlabs%20Repository-1.0.0-blue.svg?style=flat)](https://github.com/Raizlabs/maven-releases)
+[![Raizlabs Repository](http://img.shields.io/badge/Raizlabs%20Repository-1.0.3-blue.svg?style=flat)](https://github.com/Raizlabs/maven-releases)
 
 # DebugModule
 
 A powerful debug module that is fully pluggable, extendable, and very useful. It enables you to create your own ```Critter``` that contain 
-UI elements which enable you configure your application on the fly. It injects a right-facing ```DrawerLayout``` into your activity on top of
+UI elements which enable you configure your application on the fly. 
+
+It also can inject a right-facing ```DrawerLayout``` into your activity on top of
 all other content, making it very unobtrusive and accessible from __everywhere within your application__.
 
 ## Getting Started
 
-Add the maven repo url to your build.gradle:
+Add the library to the project-level build.gradle, using the
+[Griddle](https://github.com/Raizlabs/Griddle) plugin to simplify your build.gradle and link sources:
 
 ```groovy
 
-  repositories {
-        maven { url "https://raw.github.com/Raizlabs/maven-releases/master/releases" }
+  apply plugin: 'com.raizlabs.griddle'
+
+  dependencies {
+    mod 'com.raizlabs.android:DebugModule:1.1.0'
   }
 
 ```
 
-Since this is a **Debug Module**, we should __explicitly__ only include it in our debug app builds, or a specific ```buildFlavor```,
-```buildType```, or ```buildVariant```.
-
-Add the library to the project-level build.gradle, using the 
-[AARLinkSources](https://github.com/xujiaao/AARLinkSources) plugin::
+or by standard Gradle use (without linking sources support):
 
 ```groovy
 
   dependencies {
-    debugCompile 'com.raizlabs.android:DebugModule:1.0.0'
-    aarLinkSources 'com.raizlabs.android:DebugModule:1.0.0:sources@jar'
+    compile "com.raizlabs.android:DebugModule:1.1.0"
   }
 
 ```
@@ -47,7 +47,7 @@ Here is an example of a provider with ```UrlCritter``` capabilities:
 
 ```java
 
-public abstract class DebugOptionsProvider {
+public abstract class AppOptionsProvider {
 
     private static CompletedAppUrlProvider provider;
 
@@ -106,7 +106,7 @@ For this example, we are relying on the ```buildType``` to implement the abstrac
  * Description: Defines the implementation for an DebugOptionsProvider for release.
  * We only return the main app endpoint.
  */
-public class CompletedDebugOptionsProvider extends DebugOptionsProvider {
+public class CompletedDebugOptionsProvider extends AppOptionsProvider {
 
     private String mUrl;
 
@@ -125,7 +125,7 @@ public class CompletedDebugOptionsProvider extends DebugOptionsProvider {
 ```
 
 In this case an abstract class is an advantage, since we only need to implement methods that we intend to use. Using that,
-all other methods as part of ```DebugOptionsProvider``` will do nothing.
+all other methods as part of ```AppOptionsProvider``` will do nothing.
 
 Here is the ```debug``` version of the implementation. Please note that the package name and class name **must** be the same.
 
@@ -135,7 +135,7 @@ Here is the ```debug``` version of the implementation. Please note that the pack
  * Description: Defines the implementation for an {@link DebugOptionsProvider}
  * for debug. We use the debug module to show the menu.
  */
-public class CompletedAppUrlProvider extends DebugOptionsProvider {
+public class CompletedAppUrlProvider extends AppOptionsProvider {
 
     public static final String CRITTER_URL_NAME = "Select App Endpoint";
 
@@ -236,6 +236,8 @@ We have provided a few default ```Critter``` for URL switching and app informati
 
 ```PreferenceCritter```: Enables dynamic changes to preferences you provide while the app is running. Instead of having to clear app data and reopen the app, you can change it within the app very easily.
 
+```DatabaseCritter```: Viewing database tables (very basically) for an app without needing to pull the sqlite file off the device or using another machine.
+
 You can create your own custom ```Critter``` fairly easily and it is flexible on what goes into it. It is up to your __imagination__ on what you can configure at runtime for your app.
 
 ### Critters
@@ -266,3 +268,7 @@ Check out the currently included ```Critter```:
 [Preference Critter](https://github.com/Raizlabs/DebugModule/master/usage/PrefCritter.md)
 
 [Database Browser](https://github.com/Raizlabs/DebugModule/master/usage/DatabaseCritter.md)
+
+# Maintainers
+
+[agrosner](https://github.com/agrosner)
