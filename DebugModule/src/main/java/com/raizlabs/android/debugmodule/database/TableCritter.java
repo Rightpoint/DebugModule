@@ -51,12 +51,14 @@ public class TableCritter implements Critter {
         layoutRes = layoutResource;
         recyclerView = (RecyclerView) view.findViewById(R.id.view_debug_module_table_list);
 
-        Cursor cursor = database.query(tableName, null, null, null, null, null, null);
-        tableAdapter = new TableAdapter(view.getContext(), cursor);
-        FixedGridLayoutManager gridLayoutManager = new FixedGridLayoutManager();
-        gridLayoutManager.setTotalColumnCount(cursor.getColumnCount());
-        recyclerView.setLayoutManager(gridLayoutManager);
-        recyclerView.setAdapter(tableAdapter);
+        if(database != null) {
+            Cursor cursor = database.query(tableName, null, null, null, null, null, null);
+            tableAdapter = new TableAdapter(view.getContext(), cursor);
+            FixedGridLayoutManager gridLayoutManager = new FixedGridLayoutManager();
+            gridLayoutManager.setTotalColumnCount(cursor.getColumnCount());
+            recyclerView.setLayoutManager(gridLayoutManager);
+            recyclerView.setAdapter(tableAdapter);
+        }
     }
 
     public void setDatabase(String tableName, SQLiteDatabase database) {
@@ -75,8 +77,7 @@ public class TableCritter implements Critter {
 
     @Override
     public void cleanup() {
-        database = null;
-        Debugger.getInstance().dispose(tableName + "-Table");
+        Debugger.getInstance().disposeQuietly(tableName + "-Table");
     }
 
     final View.OnClickListener onClickListener = new View.OnClickListener() {
@@ -135,35 +136,43 @@ public class TableCritter implements Critter {
 
         @Override
         public void onBindViewHolder(ViewHolder viewHolder, int position) {
-            viewHolder.contentArea.setTag(position);
-            viewHolder.contentArea.setOnClickListener(onClickListener);
+            int columnPosition = position%columnCount;
             if (position < columnCount) {
-                int columnName = position % columnCount;
-                viewHolder.contentArea.setText(columnNames[columnName]);
-            } else if (cursor.moveToPosition((position % columnCount) + 1)) {
-                String currentColumn = columnNames[position % columnCount];
-                int index = cursor.getColumnIndex(currentColumn);
-                int type = cursor.getType(index);
-                Object value = null;
-                switch (type) {
-                    case FIELD_TYPE_BLOB:
-                        value = cursor.getBlob(index);
-                        break;
-                    case FIELD_TYPE_FLOAT:
-                        value = cursor.getFloat(index);
-                        break;
-                    case FIELD_TYPE_INTEGER:
-                        value = cursor.getInt(index);
-                        break;
-                    case FIELD_TYPE_STRING:
-                        value = cursor.getString(index);
-                        break;
-                    case FIELD_TYPE_NULL:
-                    default:
-                        break;
+                viewHolder.contentArea.setText(columnNames[columnPosition]);
+            } else {
+                viewHolder.contentArea.setOnClickListener(onClickListener);
+
+                int cursorPosition = position/columnCount - 1;
+                viewHolder.contentArea.setTag(cursorPosition-1);
+                if(cursor.moveToPosition(cursorPosition)) {
+                    String currentColumn = columnNames[columnPosition];
+                    int index = cursor.getColumnIndex(currentColumn);
+                    int type = cursor.getType(index);
+                    Object value = null;
+                    switch (type) {
+                        case FIELD_TYPE_BLOB:
+                            value = cursor.getBlob(index);
+                            break;
+                        case FIELD_TYPE_FLOAT:
+                            value = cursor.getFloat(index);
+                            break;
+                        case FIELD_TYPE_INTEGER:
+                            value = cursor.getInt(index);
+                            break;
+                        case FIELD_TYPE_STRING:
+                            value = cursor.getString(index);
+                            break;
+                        case FIELD_TYPE_NULL:
+                        default:
+                            break;
+                    }
+                    // limit to characters specified.
+                    String display = String.valueOf(value);
+                    viewHolder.contentArea.setText(
+                            display.length() < maxCharacterCount ? display : display.substring(0, maxCharacterCount));
+                } else {
+                    viewHolder.contentArea.setText("ERROR");
                 }
-                // limit to characters specified.
-                viewHolder.contentArea.setText(String.valueOf(value).substring(0, maxCharacterCount));
             }
         }
 

@@ -85,7 +85,7 @@ public class Debugger {
         for (int i = 0; i < contentView.getChildCount(); i++) {
             View child = contentView.getChildAt(i);
             if (child instanceof NoContentDrawerLayout
-                    && child.getId() == R.id.view_debug_module_menu_drawer_layout) {
+                && child.getId() == R.id.view_debug_module_menu_drawer_layout) {
                 mDebugDrawer = (NoContentDrawerLayout) child;
                 break;
             }
@@ -94,15 +94,16 @@ public class Debugger {
             TypedValue tv = new TypedValue();
             int actionBarHeight = 0;
             if (activity.getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
-                actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data, activity.getResources().getDisplayMetrics());
+                actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data,
+                                                                         activity.getResources().getDisplayMetrics());
             }
             setDrawerGravity(mDrawerGravity);
             mDebugDrawer.setPadding(mDebugDrawer.getPaddingLeft(), actionBarHeight,
-                    mDebugDrawer.getPaddingRight(), mDebugDrawer.getPaddingBottom());
+                                    mDebugDrawer.getPaddingRight(), mDebugDrawer.getPaddingBottom());
 
             View menuDrawer = activity.findViewById(R.id.view_debug_module_menu_drawer);
             menuDrawer.setPadding(menuDrawer.getPaddingLeft(), actionBarHeight,
-                    menuDrawer.getPaddingRight(), menuDrawer.getPaddingBottom());
+                                  menuDrawer.getPaddingRight(), menuDrawer.getPaddingBottom());
         }
         // Add the debug menu
         attachDebugFragment(activity, R.id.view_debug_module_menu_drawer);
@@ -135,7 +136,8 @@ public class Debugger {
             View menuDrawer = mDebugDrawer.findViewById(R.id.view_debug_module_menu_drawer);
             NoContentDrawerLayout.LayoutParams params = (NoContentDrawerLayout.LayoutParams) menuDrawer.getLayoutParams();
             if (params == null) {
-                params = new NoContentDrawerLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+                params = new NoContentDrawerLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                                                                ViewGroup.LayoutParams.MATCH_PARENT);
             }
             params.gravity = gravityInt;
             menuDrawer.setLayoutParams(params);
@@ -183,7 +185,7 @@ public class Debugger {
      */
     public boolean onBackPressed(FragmentActivity activity) {
         if (activity.getSupportFragmentManager().getBackStackEntryCount() == 0 && mDebugDrawer != null
-                && mDebugDrawer.isDrawerOpen(Gravity.RIGHT)) {
+            && mDebugDrawer.isDrawerOpen(Gravity.RIGHT)) {
             mDebugDrawer.closeDrawer(Gravity.RIGHT);
             return true;
         } else {
@@ -218,7 +220,8 @@ public class Debugger {
      * @return A pre-casted critter
      */
     @SuppressWarnings("unchecked")
-    public <CritterClass extends Critter> CritterClass getCritter(Class<CritterClass> critterClazz, String critterName) {
+    public <CritterClass extends Critter> CritterClass getCritter(Class<CritterClass> critterClazz,
+                                                                  String critterName) {
         return (CritterClass) getCritter(critterName);
     }
 
@@ -239,7 +242,8 @@ public class Debugger {
     }
 
     /**
-     * Removes and returns the {@link com.raizlabs.android.debugmodule.Critter} that was removed.
+     * Removes and returns the {@link com.raizlabs.android.debugmodule.Critter} that was removed. Notifies {@link CritterRemoveListener}
+     * that it has been removed.
      *
      * @param critterName The name of the critter
      * @return The removed critter
@@ -248,6 +252,16 @@ public class Debugger {
         Critter critter = mCritters.remove(critterName);
         mInternalListener.onCritterRemoved(critter);
         return critter;
+    }
+
+    /**
+     * Removes and returns the {@link Critter} that was removed.
+     *
+     * @param critterName The name of the critter
+     * @return The removed critter.
+     */
+    public Critter disposeQuietly(String critterName) {
+        return mCritters.remove(critterName);
     }
 
     /**
