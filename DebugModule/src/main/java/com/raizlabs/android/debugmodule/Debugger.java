@@ -26,6 +26,8 @@ import java.util.Set;
  */
 public class Debugger {
 
+    private static final String TAG_DEBUG_FRAGMENT = "DebugMenuFragment";
+
     /**
      * Called when the critter is removed from the {@link com.raizlabs.android.debugmodule.Debugger}
      */
@@ -113,14 +115,36 @@ public class Debugger {
      * Attaches the {@link com.raizlabs.android.debugmodule.DebugMenuFragment} into the specified
      * activity.
      *
-     * @param activity   The activity to attach to
-     * @param debugFrame The container id of the layout to put the fragment into.
+     * @param activity     The activity to attach to
+     * @param debugFrame   The container id of the layout to put the fragment into.
+     * @param useBackStack Add this fragment to the backstack.
+     */
+    public DebugMenuFragment attachDebugFragment(FragmentActivity activity, @IdRes int debugFrame,
+                                                 boolean useBackStack) {
+        DebugMenuFragment fragment = (DebugMenuFragment) activity.getSupportFragmentManager().findFragmentByTag(
+                TAG_DEBUG_FRAGMENT);
+        if (fragment == null) {
+            fragment = DebugMenuFragment.newInstance(debugFrame);
+            FragmentTransaction fragmentTransaction = activity.getSupportFragmentManager()
+                    .beginTransaction();
+            if (useBackStack) {
+                fragmentTransaction.addToBackStack(null);
+            }
+            fragmentTransaction.replace(debugFrame, fragment)
+                    .commit();
+        }
+        return fragment;
+    }
+
+    /**
+     * Attaches the {@link com.raizlabs.android.debugmodule.DebugMenuFragment} into the specified
+     * activity.
+     *
+     * @param activity     The activity to attach to
+     * @param debugFrame   The container id of the layout to put the fragment into.
      */
     public DebugMenuFragment attachDebugFragment(FragmentActivity activity, @IdRes int debugFrame) {
-        FragmentTransaction transaction = activity.getSupportFragmentManager().beginTransaction();
-        DebugMenuFragment fragment = DebugMenuFragment.newInstance(debugFrame);
-        transaction.addToBackStack(null).replace(debugFrame, fragment).commit();
-        return fragment;
+        return attachDebugFragment(activity, debugFrame, false);
     }
 
     /**
