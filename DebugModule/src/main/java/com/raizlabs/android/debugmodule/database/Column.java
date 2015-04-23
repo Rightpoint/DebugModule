@@ -13,6 +13,8 @@ public class Column<Type> {
 
     Class<Type> columnType;
 
+    boolean notNull = false;
+
     public Column() {
     }
 
