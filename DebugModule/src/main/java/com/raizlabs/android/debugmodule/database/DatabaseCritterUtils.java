@@ -41,13 +41,40 @@ public class DatabaseCritterUtils {
         return result;
     }
 
-    public static Map<String, Column> getDbRowMap(Cursor cursor, int position) {
+    public static Map<String, Column> getDbRowMap(SQLiteDatabase database, String tableName, Cursor cursor, int position) {
         Map<String, Column> data = new HashMap<>();
+
+        Map<String, Integer> columnTypeMap = new HashMap<>();
+        Cursor tableInfo = database.rawQuery(String.format("PRAGMA table_info(%1s)", tableName), null);
+        if(tableInfo.moveToFirst()) {
+            do {
+                String type = tableInfo.getString(tableInfo.getColumnIndex("type"));
+                String columnName = tableInfo.getString(tableInfo.getColumnIndex("name"));
+                switch (type) {
+                    case "INTEGER":
+                        columnTypeMap.put(columnName, FIELD_TYPE_INTEGER);
+                        break;
+                    case "BLOB":
+                        columnTypeMap.put(columnName, FIELD_TYPE_BLOB);
+                        break;
+                    case "TEXT":
+                        columnTypeMap.put(columnName, FIELD_TYPE_STRING);
+                        break;
+                    case "REAL":
+                        columnTypeMap.put(columnName, FIELD_TYPE_FLOAT);
+                        break;
+                }
+            } while (tableInfo.moveToNext());
+        }
+
+
+        tableInfo.close();
+
         if (cursor.moveToPosition(position + 1)) {
             String[] columns = cursor.getColumnNames();
             for (String column : columns) {
                 int index = cursor.getColumnIndex(column);
-                int type = cursor.getType(index);
+                int type = columnTypeMap.get(column);
                 Object value = null;
                 Class clazz = null;
                 switch (type) {
@@ -68,6 +95,8 @@ public class DatabaseCritterUtils {
                         clazz = String.class;
                         break;
                     case FIELD_TYPE_NULL:
+                        value = null;
+                        clazz = null;
                     default:
                         break;
                 }

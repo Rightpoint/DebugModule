@@ -20,6 +20,6 @@ dependencies {
 
     compile project(debug_module_project_prefix + "DebugModule")
 
-    apt 'com.raizlabs.android:DBFlow-Compiler:1.7.0'
-    mod "com.raizlabs.android:{DBFlow-Core, DBFlow}:1.7.0"
+    apt 'com.raizlabs.android:DBFlow-Compiler:1.8.0'
+    mod "com.raizlabs.android:{DBFlow-Core, DBFlow}:1.8.0"
 }

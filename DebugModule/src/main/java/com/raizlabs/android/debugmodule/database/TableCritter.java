@@ -85,7 +85,7 @@ public class TableCritter implements Critter {
         public void onClick(View v) {
             int position = (int) v.getTag();
             Cursor currentRow = tableAdapter.getCursor();
-            Map<String, Column> columnMap = DatabaseCritterUtils.getDbRowMap(currentRow, position);
+            Map<String, Column> columnMap = DatabaseCritterUtils.getDbRowMap(database, tableName, currentRow, position);
 
             RowCritter rowCritter = new RowCritter();
             rowCritter.setColumnDataMap(tableName, database, columnMap);
