@@ -92,7 +92,7 @@ public class RowCritter implements Critter {
         @Override
         public void onClick(View v) {
             ContentValues contentValues = DatabaseCritterUtils.toContentValues(columnDataMap);
-            int count = database.updateWithOnConflict(tableName, contentValues, DatabaseCritterUtils.toWhere(originalColumnMap), null, SQLiteDatabase.CONFLICT_REPLACE);
+            int count = database.updateWithOnConflict(tableName, contentValues, DatabaseCritterUtils.toWhere(originalColumnMap), null, SQLiteDatabase.CONFLICT_FAIL);
             Toast.makeText(v.getContext(), count == 1 ? "Row updated successfully" :
                     (count > 1 ? "Update touched more than one row" : "Row update failed"), Toast.LENGTH_SHORT).show();
         }

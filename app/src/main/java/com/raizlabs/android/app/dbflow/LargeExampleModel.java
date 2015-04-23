@@ -23,7 +23,7 @@ public class LargeExampleModel extends ExampleModel {
     public String nonNullColumn;
 
     @Column(columnType = Column.FOREIGN_KEY,
-        references = {@ForeignKeyReference(columnType = long.class, columnName = "example_id", foreignColumnName = "id")})
+        references = {@ForeignKeyReference(columnType = Long.class, columnName = "example_id", foreignColumnName = "id")})
     ExampleModel exampleModel;
 
 }

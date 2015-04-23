@@ -76,14 +76,16 @@ public class DatabaseCritterUtils {
                 int index = cursor.getColumnIndex(column);
                 Column columnObject = data.get(column);
                 Object value = null;
-                if (columnObject.columnType == byte[].class) {
-                    value = cursor.getBlob(index);
-                } else if (columnObject.columnType == Float.class){
-                    value = cursor.getFloat(index);
-                } else if (columnObject.columnType == Integer.class) {
-                    value = cursor.getInt(index);
-                } else if (columnObject.columnType == String.class) {
-                    value = cursor.getString(index);
+                if(!cursor.isNull(index)) {
+                    if (columnObject.columnType == byte[].class) {
+                        value = cursor.getBlob(index);
+                    } else if (columnObject.columnType == Float.class) {
+                        value = cursor.getFloat(index);
+                    } else if (columnObject.columnType == Integer.class) {
+                        value = cursor.getInt(index);
+                    } else if (columnObject.columnType == String.class) {
+                        value = cursor.getString(index);
+                    }
                 }
                 columnObject.value = value;
             }

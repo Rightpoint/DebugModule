@@ -71,7 +71,9 @@ public class RowEditView extends LinearLayout {
     void populate(Column column, RowCritter.ColumnChangeListener columnChangeListener) {
         listener = columnChangeListener;
         this.column = column;
-        rowValue.setText(String.valueOf(column.value));
+        if(column.value != null) {
+            rowValue.setText(String.valueOf(column.value));
+        }
         rowTitle.setText(column.columnName);
 
         Class columnType = column.columnType;

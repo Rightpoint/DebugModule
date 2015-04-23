@@ -87,6 +87,7 @@ public class MainFragment extends Fragment {
                 new Random(System.currentTimeMillis()).nextBytes(buffer);
                 largeExampleModel.anotherName = new String(buffer);
                 largeExampleModel.anotherName2 = "wwowowowo";
+                largeExampleModel.nonNullColumn = "Never Null";
                 largeExampleModel.save(false);
             }
         });
