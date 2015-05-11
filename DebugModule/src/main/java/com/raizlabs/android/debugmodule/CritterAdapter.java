@@ -9,31 +9,30 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Description: The adapter of critters to display on screen
  */
 public class CritterAdapter extends BaseAdapter {
 
-    private ArrayList<String> mCritterList;
+    private ArrayList<String> critterList;
 
     public CritterAdapter(Map<String, Critter> data) {
-        mCritterList = new ArrayList<>(data.keySet());
+        critterList = new ArrayList<>(data.keySet());
     }
 
     public void remove(String critter) {
-        mCritterList.remove(critter);
+        critterList.remove(critter);
     }
 
     @Override
     public int getCount() {
-        return mCritterList != null ? mCritterList.size() : 0;
+        return critterList != null ? critterList.size() : 0;
     }
 
     @Override
     public String getItem(int position) {
-        return mCritterList.get(position);
+        return critterList.get(position);
     }
 
     @Override

@@ -21,27 +21,27 @@ public class PreferenceBuilder<PreferenceClass> {
     /**
      * The shared preferences handle that we use.
      */
-    private SharedPreferences mPrefs;
+    private SharedPreferences preferences;
 
     /**
      * The key to retrieve preference from.
      */
-    private String mPrefKey;
+    private String prefKey;
 
     /**
      * The name of the preference to use when display this item.
      */
-    private String mPrefTitleName;
+    private String prefTitleName;
 
     /**
      * The type of preference to retrieve.
      */
-    private Class<PreferenceClass> mPrefType;
+    private Class<PreferenceClass> prefType;
 
     /**
      * The default value in case preference not found.
      */
-    private PreferenceClass mDefaultValue;
+    private PreferenceClass defaultValue;
 
     /**
      * Constructs a default object that uses the {@link android.preference.PreferenceManager#getDefaultSharedPreferences(android.content.Context)}
@@ -75,9 +75,9 @@ public class PreferenceBuilder<PreferenceClass> {
      */
     public PreferenceBuilder(Context context, String sharedPreferencesKey, int mode) {
         if (sharedPreferencesKey != null && !sharedPreferencesKey.isEmpty()) {
-            mPrefs = context.getSharedPreferences(sharedPreferencesKey, mode);
+            preferences = context.getSharedPreferences(sharedPreferencesKey, mode);
         } else {
-            mPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+            preferences = PreferenceManager.getDefaultSharedPreferences(context);
         }
     }
 
@@ -88,7 +88,7 @@ public class PreferenceBuilder<PreferenceClass> {
      * @return This instance
      */
     public PreferenceBuilder<PreferenceClass> prefKey(String prefKey) {
-        mPrefKey = prefKey;
+        this.prefKey = prefKey;
         return this;
     }
 
@@ -102,7 +102,7 @@ public class PreferenceBuilder<PreferenceClass> {
         if(!VALID_TYPES.contains(prefType)) {
             throw new IllegalArgumentException("The specified type: " + prefType + " is not supported in preferences");
         }
-        mPrefType = prefType;
+        this.prefType = prefType;
         return this;
     }
 
@@ -113,7 +113,7 @@ public class PreferenceBuilder<PreferenceClass> {
      * @return This instance
      */
     public PreferenceBuilder<PreferenceClass> defValue(PreferenceClass defaultValue) {
-        mDefaultValue = defaultValue;
+        this.defaultValue = defaultValue;
         return this;
     }
 
@@ -125,23 +125,23 @@ public class PreferenceBuilder<PreferenceClass> {
      * @return This instance
      */
     public PreferenceBuilder<PreferenceClass> titleName(String titleName) {
-        mPrefTitleName = titleName;
+        prefTitleName = titleName;
         return this;
     }
 
     public String getTitle() {
-        if(mPrefTitleName == null || mPrefTitleName.isEmpty()) {
-            mPrefTitleName = mPrefKey;
+        if(prefTitleName == null || prefTitleName.isEmpty()) {
+            prefTitleName = prefKey;
         }
-        return mPrefTitleName;
+        return prefTitleName;
     }
 
     public Class<PreferenceClass> getPrefType() {
-        return mPrefType;
+        return prefType;
     }
 
     public PreferenceClass getDefaultValue() {
-        return mDefaultValue;
+        return defaultValue;
     }
 
     /**
@@ -151,19 +151,19 @@ public class PreferenceBuilder<PreferenceClass> {
     public PreferenceClass getPreference() {
         checkValues();
         Object preference = null;
-        boolean isNull = (mDefaultValue == null);
-        if (mPrefType.equals(Boolean.class)) {
-            preference = mPrefs.getBoolean(mPrefKey, isNull ? false : (Boolean) mDefaultValue);
-        } else if (mPrefType.equals(Integer.class)) {
-            preference = mPrefs.getInt(mPrefKey, isNull ? 0 : (Integer) mDefaultValue);
-        } else if (mPrefType.equals(Set.class)) {
-            preference = mPrefs.getStringSet(mPrefKey, (Set<String>) mDefaultValue);
-        } else if (mPrefType.equals(Float.class)) {
-            preference = mPrefs.getFloat(mPrefKey, isNull ? 0.0f : (Float) mDefaultValue);
-        } else if (mPrefType.equals(Long.class)) {
-            preference = mPrefs.getLong(mPrefKey, isNull ? 0l : (Long) mDefaultValue);
-        } else if (mPrefType.equals(String.class)) {
-            preference = mPrefs.getString(mPrefKey, (String) mDefaultValue);
+        boolean isNull = (defaultValue == null);
+        if (prefType.equals(Boolean.class)) {
+            preference = preferences.getBoolean(prefKey, isNull ? false : (Boolean) defaultValue);
+        } else if (prefType.equals(Integer.class)) {
+            preference = preferences.getInt(prefKey, isNull ? 0 : (Integer) defaultValue);
+        } else if (prefType.equals(Set.class)) {
+            preference = preferences.getStringSet(prefKey, (Set<String>) defaultValue);
+        } else if (prefType.equals(Float.class)) {
+            preference = preferences.getFloat(prefKey, isNull ? 0.0f : (Float) defaultValue);
+        } else if (prefType.equals(Long.class)) {
+            preference = preferences.getLong(prefKey, isNull ? 0l : (Long) defaultValue);
+        } else if (prefType.equals(String.class)) {
+            preference = preferences.getString(prefKey, (String) defaultValue);
         }
 
 
@@ -178,23 +178,23 @@ public class PreferenceBuilder<PreferenceClass> {
     public void applyPreference(PreferenceClass preferenceValue, PreferenceChangeListener listener) {
         checkValues();
         SharedPreferences.Editor editor = edit();
-        if (mPrefType.equals(Boolean.class)) {
-            editor.putBoolean(mPrefKey, preferenceValue == null ? false : (Boolean) preferenceValue);
-        } else if (mPrefType.equals(Integer.class)) {
-            editor.putInt(mPrefKey, preferenceValue == null ? 0 : (Integer) preferenceValue);
-        } else if (mPrefType.equals(Set.class)) {
-            editor.putStringSet(mPrefKey, (Set<String>) preferenceValue);
-        } else if (mPrefType.equals(Float.class)) {
-            editor.putFloat(mPrefKey, preferenceValue == null ? 0.0f : (Float) preferenceValue);
-        } else if (mPrefType.equals(Long.class)) {
-            editor.putLong(mPrefKey, preferenceValue == null ? 0l : (Long) preferenceValue);
-        } else if (mPrefType.equals(String.class)) {
-            editor.putString(mPrefKey, ((String) preferenceValue));
+        if (prefType.equals(Boolean.class)) {
+            editor.putBoolean(prefKey, preferenceValue == null ? false : (Boolean) preferenceValue);
+        } else if (prefType.equals(Integer.class)) {
+            editor.putInt(prefKey, preferenceValue == null ? 0 : (Integer) preferenceValue);
+        } else if (prefType.equals(Set.class)) {
+            editor.putStringSet(prefKey, (Set<String>) preferenceValue);
+        } else if (prefType.equals(Float.class)) {
+            editor.putFloat(prefKey, preferenceValue == null ? 0.0f : (Float) preferenceValue);
+        } else if (prefType.equals(Long.class)) {
+            editor.putLong(prefKey, preferenceValue == null ? 0l : (Long) preferenceValue);
+        } else if (prefType.equals(String.class)) {
+            editor.putString(prefKey, ((String) preferenceValue));
         }
         editor.apply();
 
         if (listener != null) {
-            listener.onPreferenceChanged(mPrefKey, preferenceValue);
+            listener.onPreferenceChanged(prefKey, preferenceValue);
         }
     }
 
@@ -208,11 +208,11 @@ public class PreferenceBuilder<PreferenceClass> {
     public PreferenceClass toValue(String text) throws NumberFormatException {
         checkValues();
         Object preference = null;
-        if (mPrefType.equals(Boolean.class)) {
+        if (prefType.equals(Boolean.class)) {
             preference = new Boolean(text);
-        } else if (mPrefType.equals(Integer.class)) {
+        } else if (prefType.equals(Integer.class)) {
             preference = new Integer(text);
-        } else if (mPrefType.equals(Set.class)) {
+        } else if (prefType.equals(Set.class)) {
             preference = new HashSet<>();
             if (text != null) {
                 String[] values = text.split(",");
@@ -220,11 +220,11 @@ public class PreferenceBuilder<PreferenceClass> {
                     ((HashSet) preference).add(value);
                 }
             }
-        } else if (mPrefType.equals(Float.class)) {
+        } else if (prefType.equals(Float.class)) {
             preference = new Float(text);
-        } else if (mPrefType.equals(Long.class)) {
+        } else if (prefType.equals(Long.class)) {
             preference = new Long(text);
-        } else if (mPrefType.equals(String.class)) {
+        } else if (prefType.equals(String.class)) {
             preference = text;
         }
 
@@ -232,11 +232,11 @@ public class PreferenceBuilder<PreferenceClass> {
     }
 
     private SharedPreferences.Editor edit() {
-        return mPrefs.edit();
+        return preferences.edit();
     }
 
     private void checkValues() {
-        if(mPrefType == null || mPrefKey == null || mPrefKey.isEmpty()) {
+        if(prefType == null || prefKey == null || prefKey.isEmpty()) {
             throw new IllegalStateException("The preference builder must have both a type and key");
         }
     }
@@ -248,16 +248,16 @@ public class PreferenceBuilder<PreferenceClass> {
 
         PreferenceBuilder that = (PreferenceBuilder) o;
 
-        if (!mPrefKey.equals(that.mPrefKey)) return false;
-        if (!mPrefType.equals(that.mPrefType)) return false;
+        if (!prefKey.equals(that.prefKey)) return false;
+        if (!prefType.equals(that.prefType)) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = mPrefKey.hashCode();
-        result = 31 * result + mPrefType.hashCode();
+        int result = prefKey.hashCode();
+        result = 31 * result + prefType.hashCode();
         return result;
     }
 }

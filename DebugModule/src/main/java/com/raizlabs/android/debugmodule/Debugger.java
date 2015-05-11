@@ -26,6 +26,8 @@ import java.util.Set;
  */
 public class Debugger {
 
+    private static final String TAG_DEBUG_FRAGMENT = "DebugMenuFragment";
+
     /**
      * Called when the critter is removed from the {@link com.raizlabs.android.debugmodule.Debugger}
      */
@@ -36,7 +38,7 @@ public class Debugger {
          *
          * @param critter The critter that was removed.
          */
-        public void onCritterRemoved(Critter critter);
+        void onCritterRemoved(Critter critter);
     }
 
     private static Debugger debugger;
@@ -52,24 +54,24 @@ public class Debugger {
     /**
      * Map of critters defined by key (the name it displays)
      */
-    private HashMap<String, Critter> mCritters = new HashMap<>();
+    private HashMap<String, Critter> critters = new HashMap<>();
 
     /**
      * The drawer currently attached to the Activity
      */
-    private NoContentDrawerLayout mDebugDrawer;
+    private NoContentDrawerLayout debugDrawer;
 
     /**
      * Sets the vertical x size that touches will come to the {@link com.raizlabs.android.debugmodule.view.NoContentDrawerLayout}
      */
-    private int mMinimumTouchSize;
+    private int minimumTouchSize;
 
     /**
      * The gravity to set the debug drawer to be placed at.
      */
-    private int mDrawerGravity = Gravity.RIGHT;
+    private int drawerGravity = Gravity.RIGHT;
 
-    private List<CritterRemoveListener> mListeners = new ArrayList<>();
+    private List<CritterRemoveListener> lListeners = new ArrayList<>();
 
     /**
      * Attaches itself to the activity as an overlay. Call this in {@link android.app.Activity#onResume()}. Make sure to attach
@@ -85,8 +87,8 @@ public class Debugger {
         for (int i = 0; i < contentView.getChildCount(); i++) {
             View child = contentView.getChildAt(i);
             if (child instanceof NoContentDrawerLayout
-                    && child.getId() == R.id.view_debug_module_menu_drawer_layout) {
-                mDebugDrawer = (NoContentDrawerLayout) child;
+                && child.getId() == R.id.view_debug_module_menu_drawer_layout) {
+                debugDrawer = (NoContentDrawerLayout) child;
                 break;
             }
         }
@@ -94,15 +96,16 @@ public class Debugger {
             TypedValue tv = new TypedValue();
             int actionBarHeight = 0;
             if (activity.getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
-                actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data, activity.getResources().getDisplayMetrics());
+                actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data,
+                                                                         activity.getResources().getDisplayMetrics());
             }
-            setDrawerGravity(mDrawerGravity);
-            mDebugDrawer.setPadding(mDebugDrawer.getPaddingLeft(), actionBarHeight,
-                    mDebugDrawer.getPaddingRight(), mDebugDrawer.getPaddingBottom());
+            setDrawerGravity(drawerGravity);
+            debugDrawer.setPadding(debugDrawer.getPaddingLeft(), actionBarHeight,
+                                    debugDrawer.getPaddingRight(), debugDrawer.getPaddingBottom());
 
             View menuDrawer = activity.findViewById(R.id.view_debug_module_menu_drawer);
             menuDrawer.setPadding(menuDrawer.getPaddingLeft(), actionBarHeight,
-                    menuDrawer.getPaddingRight(), menuDrawer.getPaddingBottom());
+                                  menuDrawer.getPaddingRight(), menuDrawer.getPaddingBottom());
         }
         // Add the debug menu
         attachDebugFragment(activity, R.id.view_debug_module_menu_drawer);
@@ -112,14 +115,36 @@ public class Debugger {
      * Attaches the {@link com.raizlabs.android.debugmodule.DebugMenuFragment} into the specified
      * activity.
      *
-     * @param activity   The activity to attach to
-     * @param debugFrame The container id of the layout to put the fragment into.
+     * @param activity     The activity to attach to
+     * @param debugFrame   The container id of the layout to put the fragment into.
+     * @param useBackStack Add this fragment to the backstack.
+     */
+    public DebugMenuFragment attachDebugFragment(FragmentActivity activity, @IdRes int debugFrame,
+                                                 boolean useBackStack) {
+        DebugMenuFragment fragment = (DebugMenuFragment) activity.getSupportFragmentManager().findFragmentByTag(
+                TAG_DEBUG_FRAGMENT);
+        if (fragment == null) {
+            fragment = DebugMenuFragment.newInstance(debugFrame);
+            FragmentTransaction fragmentTransaction = activity.getSupportFragmentManager()
+                    .beginTransaction();
+            if (useBackStack) {
+                fragmentTransaction.addToBackStack(null);
+            }
+            fragmentTransaction.replace(debugFrame, fragment)
+                    .commit();
+        }
+        return fragment;
+    }
+
+    /**
+     * Attaches the {@link com.raizlabs.android.debugmodule.DebugMenuFragment} into the specified
+     * activity.
+     *
+     * @param activity     The activity to attach to
+     * @param debugFrame   The container id of the layout to put the fragment into.
      */
     public DebugMenuFragment attachDebugFragment(FragmentActivity activity, @IdRes int debugFrame) {
-        FragmentTransaction transaction = activity.getSupportFragmentManager().beginTransaction();
-        DebugMenuFragment fragment = DebugMenuFragment.newInstance(debugFrame);
-        transaction.addToBackStack(null).replace(debugFrame, fragment).commit();
-        return fragment;
+        return attachDebugFragment(activity, debugFrame, false);
     }
 
     /**
@@ -129,13 +154,14 @@ public class Debugger {
      * @param gravityInt The {@link android.view.Gravity} int
      */
     public void setDrawerGravity(int gravityInt) {
-        mDrawerGravity = gravityInt;
+        drawerGravity = gravityInt;
 
-        if (mDebugDrawer != null) {
-            View menuDrawer = mDebugDrawer.findViewById(R.id.view_debug_module_menu_drawer);
+        if (debugDrawer != null) {
+            View menuDrawer = debugDrawer.findViewById(R.id.view_debug_module_menu_drawer);
             NoContentDrawerLayout.LayoutParams params = (NoContentDrawerLayout.LayoutParams) menuDrawer.getLayoutParams();
             if (params == null) {
-                params = new NoContentDrawerLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+                params = new NoContentDrawerLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                                                                ViewGroup.LayoutParams.MATCH_PARENT);
             }
             params.gravity = gravityInt;
             menuDrawer.setLayoutParams(params);
@@ -149,10 +175,10 @@ public class Debugger {
      *                         want the touch to be recognized for the drawer.
      */
     public void setMinimumTouchSize(int minimumTouchSize) {
-        mMinimumTouchSize = minimumTouchSize;
+        this.minimumTouchSize = minimumTouchSize;
 
-        if (mDebugDrawer != null && minimumTouchSize != 0) {
-            mDebugDrawer.setMinimumTouchSize(mMinimumTouchSize);
+        if (debugDrawer != null && minimumTouchSize != 0) {
+            debugDrawer.setMinimumTouchSize(this.minimumTouchSize);
         }
     }
 
@@ -162,8 +188,8 @@ public class Debugger {
      * @param removeListener Called when critter removed
      */
     public void registerCritterRemoveListener(CritterRemoveListener removeListener) {
-        if (!mListeners.contains(removeListener)) {
-            mListeners.add(removeListener);
+        if (!lListeners.contains(removeListener)) {
+            lListeners.add(removeListener);
         }
     }
 
@@ -173,7 +199,7 @@ public class Debugger {
      * @param removeListener The callback to remove.
      */
     public void unregisterCritterRemoveListener(CritterRemoveListener removeListener) {
-        mListeners.remove(removeListener);
+        lListeners.remove(removeListener);
     }
 
     /**
@@ -182,9 +208,9 @@ public class Debugger {
      * and there are no more fragments on backstack.
      */
     public boolean onBackPressed(FragmentActivity activity) {
-        if (activity.getSupportFragmentManager().getBackStackEntryCount() == 0 && mDebugDrawer != null
-                && mDebugDrawer.isDrawerOpen(Gravity.RIGHT)) {
-            mDebugDrawer.closeDrawer(Gravity.RIGHT);
+        if (activity.getSupportFragmentManager().getBackStackEntryCount() == 0 && debugDrawer != null
+            && debugDrawer.isDrawerOpen(Gravity.RIGHT)) {
+            debugDrawer.closeDrawer(Gravity.RIGHT);
             return true;
         } else {
             return false;
@@ -198,7 +224,7 @@ public class Debugger {
      * @param critter     A critter to attach
      */
     public Debugger use(String critterName, Critter critter) {
-        mCritters.put(critterName, critter);
+        critters.put(critterName, critter);
         return this;
     }
 
@@ -208,7 +234,7 @@ public class Debugger {
      * wasn't register.
      */
     public Critter getCritter(String critterName) {
-        return mCritters.get(critterName);
+        return critters.get(critterName);
     }
 
     /**
@@ -218,7 +244,8 @@ public class Debugger {
      * @return A pre-casted critter
      */
     @SuppressWarnings("unchecked")
-    public <CritterClass extends Critter> CritterClass getCritter(Class<CritterClass> critterClazz, String critterName) {
+    public <CritterClass extends Critter> CritterClass getCritter(Class<CritterClass> critterClazz,
+                                                                  String critterName) {
         return (CritterClass) getCritter(critterName);
     }
 
@@ -229,9 +256,9 @@ public class Debugger {
     public String getCritterName(Critter critter) {
         String critterName = null;
 
-        Set<String> keySet = mCritters.keySet();
+        Set<String> keySet = critters.keySet();
         for (String key : keySet) {
-            if (mCritters.get(key).equals(critter)) {
+            if (critters.get(key).equals(critter)) {
                 critterName = key;
             }
         }
@@ -239,15 +266,26 @@ public class Debugger {
     }
 
     /**
-     * Removes and returns the {@link com.raizlabs.android.debugmodule.Critter} that was removed.
+     * Removes and returns the {@link com.raizlabs.android.debugmodule.Critter} that was removed. Notifies {@link CritterRemoveListener}
+     * that it has been removed.
      *
      * @param critterName The name of the critter
      * @return The removed critter
      */
     public Critter dispose(String critterName) {
-        Critter critter = mCritters.remove(critterName);
+        Critter critter = critters.remove(critterName);
         mInternalListener.onCritterRemoved(critter);
         return critter;
+    }
+
+    /**
+     * Removes and returns the {@link Critter} that was removed.
+     *
+     * @param critterName The name of the critter
+     * @return The removed critter.
+     */
+    public Critter disposeQuietly(String critterName) {
+        return critters.remove(critterName);
     }
 
     /**
@@ -265,11 +303,11 @@ public class Debugger {
      * Clears all active critters from the debugger. You will need to reattach the debugger after.
      */
     public void clear() {
-        mCritters.clear();
+        critters.clear();
     }
 
     public DrawerLayout getDebugDrawer() {
-        return mDebugDrawer;
+        return debugDrawer;
     }
 
     /**
@@ -278,13 +316,13 @@ public class Debugger {
      * @return The map that backs these critters
      */
     HashMap<String, Critter> getCritterMap() {
-        return mCritters;
+        return critters;
     }
 
     private final CritterRemoveListener mInternalListener = new CritterRemoveListener() {
         @Override
         public void onCritterRemoved(Critter critter) {
-            for (CritterRemoveListener listener : mListeners) {
+            for (CritterRemoveListener listener : lListeners) {
                 listener.onCritterRemoved(critter);
             }
         }

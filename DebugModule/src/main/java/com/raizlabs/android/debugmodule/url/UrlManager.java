@@ -14,18 +14,18 @@ public class UrlManager {
 
     static final String PREF_CURRENT_URL = "debugger_pref_current_url";
 
-    private final SharedPreferences mPreferences;
+    private final SharedPreferences preferences;
 
     public UrlManager(Context context) {
-        mPreferences = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE);
+        preferences = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE);
     }
 
     public String getCurrentUrl(String baseUrl) {
-        return mPreferences.getString(PREF_CURRENT_URL, baseUrl);
+        return preferences.getString(PREF_CURRENT_URL, baseUrl);
     }
 
     public void setCurrentUrl(String currentUrl) {
-        mPreferences.edit().putString(PREF_CURRENT_URL, currentUrl).commit();
+        preferences.edit().putString(PREF_CURRENT_URL, currentUrl).commit();
     }
 
     public List<String> getUrls(Context context) {

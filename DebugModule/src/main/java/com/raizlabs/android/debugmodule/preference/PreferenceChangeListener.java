@@ -11,5 +11,5 @@ public interface PreferenceChangeListener {
      * @param preferenceKey   The key of the preference that has changed.
      * @param preferenceValue The value that it changed to.
      */
-    public void onPreferenceChanged(String preferenceKey, Object preferenceValue);
+    void onPreferenceChanged(String preferenceKey, Object preferenceValue);
 }

@@ -11,14 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static android.database.Cursor.FIELD_TYPE_BLOB;
-import static android.database.Cursor.FIELD_TYPE_FLOAT;
-import static android.database.Cursor.FIELD_TYPE_INTEGER;
-import static android.database.Cursor.FIELD_TYPE_NULL;
-import static android.database.Cursor.FIELD_TYPE_STRING;
-
 /**
- * Description:
+ * Description: Provides utility methods for databases in this module.
  */
 public class DatabaseCritterUtils {
 
@@ -27,81 +21,119 @@ public class DatabaseCritterUtils {
         add("sqlite_sequence");
     }};
 
-    public static ArrayList<String> getDbTableDetails(SQLiteDatabase db, boolean useBlackList) {
+    /**
+     * @param db           The database to load and get table names from.
+     * @param useBlackList If we use the blacklist, we ignore internal system tables.
+     * @return list of table names.
+     */
+    public static ArrayList<String> getTableNames(SQLiteDatabase db, boolean useBlackList) {
         Cursor c = db.rawQuery(
                 "SELECT name FROM sqlite_master WHERE type='table'", null);
         ArrayList<String> result = new ArrayList<>();
         int i = 0;
         for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
             String name = c.getString(0);
-            if (!useBlackList || (useBlackList && !BLACKLIST.contains(name)))
+            if (!useBlackList || (useBlackList && !BLACKLIST.contains(name))) {
                 result.add(name);
+            }
         }
 
         return result;
     }
 
-    public static Map<String, Column> getDbRowMap(Cursor cursor, int position) {
+    /**
+     * @param database  The database to use.
+     * @param tableName The name of table.
+     * @param cursor    The cursor we're retrieving data from.
+     * @param position  The position of the cursor.
+     * @return the map of values between column names.
+     */
+    public static Map<String, Column> getDbRowMap(SQLiteDatabase database, String tableName, Cursor cursor,
+                                                  int position) {
         Map<String, Column> data = new HashMap<>();
+
+        // get table info for real column values
+        Cursor tableInfo = database.rawQuery(String.format("PRAGMA table_info(%1s)", tableName), null);
+        if (tableInfo.moveToFirst()) {
+            do {
+                String type = tableInfo.getString(tableInfo.getColumnIndex("type"));
+                String columnName = tableInfo.getString(tableInfo.getColumnIndex("name"));
+                boolean notNull = (tableInfo.getInt(tableInfo.getColumnIndex("notnull")) == 1);
+
+                Column column = new Column();
+                column.columnName = columnName;
+                column.notNull = notNull;
+                switch (type) {
+                    case "INTEGER":
+                        column.columnType = Integer.class;
+                        break;
+                    case "BLOB":
+                        column.columnType = byte[].class;
+                        break;
+                    case "TEXT":
+                        column.columnType = String.class;
+                        break;
+                    case "REAL":
+                        column.columnType = Float.class;
+                        break;
+                }
+                data.put(columnName, column);
+            } while (tableInfo.moveToNext());
+        }
+        tableInfo.close();
+
         if (cursor.moveToPosition(position + 1)) {
             String[] columns = cursor.getColumnNames();
             for (String column : columns) {
                 int index = cursor.getColumnIndex(column);
-                int type = cursor.getType(index);
+                Column columnObject = data.get(column);
                 Object value = null;
-                Class clazz = null;
-                switch (type) {
-                    case FIELD_TYPE_BLOB:
+                if (!cursor.isNull(index)) {
+                    if (columnObject.columnType == byte[].class) {
                         value = cursor.getBlob(index);
-                        clazz = byte[].class;
-                        break;
-                    case FIELD_TYPE_FLOAT:
+                    } else if (columnObject.columnType == Float.class) {
                         value = cursor.getFloat(index);
-                        clazz = Float.class;
-                        break;
-                    case FIELD_TYPE_INTEGER:
+                    } else if (columnObject.columnType == Integer.class) {
                         value = cursor.getInt(index);
-                        clazz = Integer.class;
-                        break;
-                    case FIELD_TYPE_STRING:
+                    } else if (columnObject.columnType == String.class) {
                         value = cursor.getString(index);
-                        clazz = String.class;
-                        break;
-                    case FIELD_TYPE_NULL:
-                    default:
-                        break;
+                    }
                 }
-                Column columnObject = new Column();
-                columnObject.columnType = clazz;
-                columnObject.columnName = column;
                 columnObject.value = value;
-                data.put(column, columnObject);
             }
         }
         return data;
     }
 
+    /**
+     * @param columnMap The map of column to content values.
+     * @return A {@link ContentValues} from map of data.
+     */
     public static ContentValues toContentValues(Map<String, Column> columnMap) {
         ContentValues contentValues = new ContentValues();
         Set<String> columnNames = columnMap.keySet();
-        for(String columnName: columnNames) {
+        for (String columnName : columnNames) {
             Column column = columnMap.get(columnName);
             column.applytoContentValue(contentValues);
         }
         return contentValues;
     }
 
+    /**
+     * @param columnMap The map of column names to values.
+     * @return A WHERE query for specified data.
+     */
     public static String toWhere(Map<String, Column> columnMap) {
         StringBuilder where = new StringBuilder();
         List<String> columnNames = new ArrayList<>(columnMap.keySet());
-        for(int i = 0; i < columnNames.size(); i++) {
-            if(i > 0) {
+        for (int i = 0; i < columnNames.size(); i++) {
+            if (i > 0) {
                 where.append(" AND ");
             }
             String columnName = columnNames.get(i);
             Column column = columnMap.get(columnName);
             where.append(column.getUpdateColumnName()).append(" = ");
-            if(column.value instanceof String) {
+            if (column.value instanceof String) {
                 where.append(DatabaseUtils.sqlEscapeString(column.value.toString()));
             } else {
                 where.append(column.value);

@@ -13,7 +13,7 @@ import android.widget.TextView;
 import com.raizlabs.android.debugmodule.R;
 
 /**
- * Description:
+ * Description: Displays a single row for editing and handles passing the changes to the {@link RowCritter.ColumnChangeListener}
  */
 public class RowEditView extends LinearLayout {
 
@@ -71,14 +71,17 @@ public class RowEditView extends LinearLayout {
     void populate(Column column, RowCritter.ColumnChangeListener columnChangeListener) {
         listener = columnChangeListener;
         this.column = column;
-        rowValue.setText(String.valueOf(column.value));
+        if (column.value != null) {
+            rowValue.setText(String.valueOf(column.value));
+        }
         rowTitle.setText(column.columnName);
 
         Class columnType = column.columnType;
         if (columnType.equals(Integer.class) || columnType.equals(Boolean.class)) {
             rowValue.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_SIGNED);
         } else if (columnType.equals(Float.class) || columnType.equals(Double.class)) {
-            rowValue.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL | InputType.TYPE_NUMBER_FLAG_SIGNED);
+            rowValue.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL |
+                                  InputType.TYPE_NUMBER_FLAG_SIGNED);
         } else if (columnType.equals(Long.class)) {
             rowValue.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_SIGNED);
         } else if (columnType.equals(String.class)) {

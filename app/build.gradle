@@ -3,21 +3,23 @@ apply plugin: 'com.neenbedankt.android-apt'
 apply plugin: 'com.raizlabs.griddle'
 
 android {
-    compileSdkVersion 21
-    buildToolsVersion "21.1.2"
+    compileSdkVersion 22
+    buildToolsVersion "22"
 
     defaultConfig {
         applicationId "com.raizlabs.android.app"
         minSdkVersion 14
-        targetSdkVersion 21
         versionCode 1
         versionName "1.0"
     }
 }
 
 dependencies {
+
+    mod 'com.getbase:floatingactionbutton:1.9.0'
+
     compile project(debug_module_project_prefix + "DebugModule")
 
-    apt 'com.raizlabs.android:DBFlow-Compiler:1.7.0'
-    mod "com.raizlabs.android:{DBFlow-Core, DBFlow}:1.7.0"
+    apt 'com.raizlabs.android:DBFlow-Compiler:1.8.0'
+    mod "com.raizlabs.android:{DBFlow-Core, DBFlow}:1.8.0"
 }

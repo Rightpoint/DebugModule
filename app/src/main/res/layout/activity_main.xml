@@ -9,31 +9,4 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:background="@android:color/white"
-    tools:context=".MainActivity">
-
-    <TextView
-        android:id="@+id/title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/DebugModule.Padding.Double"
-        android:gravity="center"
-        android:text="@string/DebugModule.Title"
-        android:textSize="@dimen/DebugModule.TextSize.Title"/>
-
-    <Button
-        android:id="@+id/openFragment"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/title"
-        android:layout_marginTop="@dimen/DebugModule.Padding.Double"
-        android:text="@string/DebugModule.OpenFragment"/>
-
-    <Button
-        android:id="@+id/openDrawer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:text="@string/DebugModule.OpenDrawerButton"/>
-
-</RelativeLayout>
+    tools:context=".MainActivity"/>

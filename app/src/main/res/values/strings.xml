@@ -6,5 +6,6 @@
     <string name="action_settings">Settings</string>
     <string name="DebugModule.OpenDrawerButton">Open Drawer</string>
     <string name="DebugModule.OpenFragment">Go to Fragment</string>
+    <string name="DebugModule.AddItem">Add A New Row</string>
 
 </resources>

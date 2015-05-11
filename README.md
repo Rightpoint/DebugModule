@@ -1,9 +1,9 @@
-[![Raizlabs Repository](http://img.shields.io/badge/Raizlabs%20Repository-2.0.0-blue.svg?style=flat)](https://github.com/Raizlabs/maven-releases)
+[![Raizlabs Repository](http://img.shields.io/badge/Raizlabs%20Repository-2.1.0-blue.svg?style=flat)](https://github.com/Raizlabs/maven-releases)
 
 # DebugModule
 
-A powerful debug module that is fully pluggable, extendable, and very useful. It enables you to create your own ```Critter``` that contain 
-UI elements which enable you configure your application on the fly. 
+A powerful debug module that is fully pluggable, extendable, and very useful. It enables you to create your own ```Critter``` that contain
+UI elements which enable you configure your application on the fly.
 
 It also can inject a right-facing ```DrawerLayout``` into your activity on top of
 all other content, making it very unobtrusive and accessible from __everywhere within your application__.
@@ -18,7 +18,7 @@ Add the library to the project-level build.gradle, using the
   apply plugin: 'com.raizlabs.griddle'
 
   dependencies {
-    mod 'com.raizlabs.android:DebugModule:2.0.0'
+    mod 'com.raizlabs.android:DebugModule:2.1.0', 'debugCompile`
   }
 
 ```
@@ -28,19 +28,19 @@ or by standard Gradle use (without linking sources support):
 ```groovy
 
   dependencies {
-    compile "com.raizlabs.android:DebugModule:2.0.0"
+    debugCompile "com.raizlabs.android:DebugModule:2.1.0"
   }
 
 ```
 
 ### Injection
 
-In order to make this work as expected, this section will contain how to properly ensure interaction between the ```Debugger``` and 
-the application. 
+In order to make this work as expected, this section will contain how to properly ensure interaction between the ```Debugger``` and
+the application.
 
 #### Create A Common Interface or Abstract Class
 
-The common abstract class or interface that you include in ```src/main/java``` will ensure that our completed implementations 
+The common abstract class or interface that you include in ```src/main/java``` will ensure that our completed implementations
 can differ between ```release``` and ```debug``` as well as allow the implementation to be uniformly used.
 
 Here is an example of a provider with ```UrlCritter``` capabilities:
@@ -230,9 +230,9 @@ A ```Critter``` is the main interface for constructing a debug submenu. It, at i
 
 We have provided a few default ```Critter``` for URL switching and app information display.
 
-```UrlCritter```: Displays a list of URLs that a tester can select from, providing callbacks for when those change. It also enables adding custom endpoints at runtime (which are persisted in app data). 
+```UrlCritter```: Displays a list of URLs that a tester can select from, providing callbacks for when those change. It also enables adding custom endpoints at runtime (which are persisted in app data).
 
-```AppInformationCritter```: Displays package name, build type, build variant, app version, and more. 
+```AppInformationCritter```: Displays package name, build type, build variant, app version, and more.
 
 ```PreferenceCritter```: Enables dynamic changes to preferences you provide while the app is running. Instead of having to clear app data and reopen the app, you can change it within the app very easily.
 
@@ -261,13 +261,13 @@ UrlCritter urlCritter = Debugger.getInstance().getCritter(UrlCritter.class, "cri
 
 Check out the currently included ```Critter```:
 
-[UrlCritter](https://github.com/Raizlabs/DebugModule/master/usage/UrlCritter.md)
+[UrlCritter](https://github.com/Raizlabs/DebugModule/blob/master/usage/UrlCritter.md)
 
-[App Information Critter](https://github.com/Raizlabs/DebugModule/master/usage/AppInformationCritter.md)
+[App Information Critter](https://github.com/Raizlabs/DebugModule/blob/master/usage/AppInformationCritter.md)
 
-[Preference Critter](https://github.com/Raizlabs/DebugModule/master/usage/PrefCritter.md)
+[Preference Critter](https://github.com/Raizlabs/DebugModule/blob/master/usage/PrefCritter.md)
 
-[Database Browser](https://github.com/Raizlabs/DebugModule/master/usage/DatabaseCritter.md)
+[Database Browser](https://github.com/Raizlabs/DebugModule/blob/master/usage/DatabaseCritter.md)
 
 # Maintainers
 

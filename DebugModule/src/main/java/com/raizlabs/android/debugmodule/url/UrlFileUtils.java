@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Scanner;
 
 /**
- * Description:
+ * Description: Utility methods for getting urls stored in the {@link UrlCritter}
  */
 public class UrlFileUtils {
 

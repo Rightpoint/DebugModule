@@ -1,6 +1,7 @@
 package com.raizlabs.android.debugmodule.database;
 
 import android.content.ContentValues;
+import android.text.TextUtils;
 
 /**
  * Description: Represents a column value of a database row
@@ -13,6 +14,8 @@ public class Column<Type> {
 
     Class<Type> columnType;
 
+    boolean notNull = false;
+
     public Column() {
     }
 
@@ -20,24 +23,25 @@ public class Column<Type> {
         this.columnName = column.columnName;
         this.value = column.value;
         this.columnType = column.columnType;
+        this.notNull = column.notNull;
     }
 
     public Type toValue(String text) {
-        Object preference = null;
-        if(text != null) {
+        Object value = null;
+        if(!TextUtils.isEmpty(text)) {
             if (columnType.equals(Boolean.class)) {
-                preference = text.equals("1") ? true : false;
+                value = text.equals("1") ? true : false;
             } else if (columnType.equals(Integer.class)) {
-                preference = Integer.valueOf(text);
+                value = Integer.valueOf(text);
             } else if (columnType.equals(Float.class)) {
-                preference = Float.valueOf(text);
+                value = Float.valueOf(text);
             } else if (columnType.equals(Long.class)) {
-                preference = Long.valueOf(text);
+                value = Long.valueOf(text);
             } else if (columnType.equals(String.class)) {
-                preference = text;
+                value = text;
             }
         }
-        return ((Type) preference);
+        return ((Type) value);
     }
 
     String getUpdateColumnName() {
@@ -45,7 +49,9 @@ public class Column<Type> {
     }
 
     public void applytoContentValue(ContentValues contentValues) {
-        if (columnType.equals(Boolean.class)) {
+        if(value == null) {
+            contentValues.putNull(getUpdateColumnName());
+        } else if (columnType.equals(Boolean.class)) {
             contentValues.put(getUpdateColumnName(), (Boolean) value);
         } else if (columnType.equals(Integer.class)) {
             contentValues.put(getUpdateColumnName(), (Integer) value);

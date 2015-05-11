@@ -8,6 +8,7 @@ current database. Currently it _only_ supports viewing tables and rows.
 
 
 You _must_ specify a `SQLiteDatabase` to use with the `Critter` to load up the database.
+The `DatabaseCritter` handles the rest!
 
 ```java
 
@@ -24,4 +25,3 @@ In this example, we are using [DBFlow](https://github.com/Raizlabs/DBFlow) to re
 
 ```useBlacklist``` ignores tables that are created by the Android system, such as ```android_metadata``` and
 ```sqlite_sequence```.
-new

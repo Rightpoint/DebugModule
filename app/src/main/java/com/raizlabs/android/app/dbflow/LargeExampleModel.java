@@ -1,6 +1,7 @@
 package com.raizlabs.android.app.dbflow;
 
 import com.raizlabs.android.dbflow.annotation.Column;
+import com.raizlabs.android.dbflow.annotation.ForeignKeyReference;
 import com.raizlabs.android.dbflow.annotation.Table;
 
 /**
@@ -17,4 +18,12 @@ public class LargeExampleModel extends ExampleModel {
 
     @Column
     public String anotherName2;
+
+    @Column(notNull = true)
+    public String nonNullColumn;
+
+    @Column(columnType = Column.FOREIGN_KEY,
+        references = {@ForeignKeyReference(columnType = Long.class, columnName = "example_id", foreignColumnName = "id")})
+    ExampleModel exampleModel;
+
 }

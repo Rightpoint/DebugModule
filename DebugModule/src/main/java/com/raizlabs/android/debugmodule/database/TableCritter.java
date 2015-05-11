@@ -5,12 +5,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.LayoutRes;
 import android.support.v4.app.FragmentActivity;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.raizlabs.android.debugmodule.Critter;
@@ -27,7 +25,7 @@ import static android.database.Cursor.FIELD_TYPE_NULL;
 import static android.database.Cursor.FIELD_TYPE_STRING;
 
 /**
- * Description:
+ * Description: Displays a table from the {@link DatabaseCritter}
  */
 public class TableCritter implements Critter {
 
@@ -36,6 +34,8 @@ public class TableCritter implements Critter {
     private SQLiteDatabase database;
 
     private String tableName;
+
+    private int maxCharacterCount = 50;
 
     TableAdapter tableAdapter;
 
@@ -51,29 +51,45 @@ public class TableCritter implements Critter {
         layoutRes = layoutResource;
         recyclerView = (RecyclerView) view.findViewById(R.id.view_debug_module_table_list);
 
-        Cursor cursor = database.query(tableName, null, null, null, null, null, null);
-        tableAdapter = new TableAdapter(view.getContext(), cursor);
-        recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
-        recyclerView.setAdapter(tableAdapter);
+        if (database != null) {
+            Cursor cursor = database.query(tableName, null, null, null, null, null, null);
+            tableAdapter = new TableAdapter(view.getContext(), cursor);
+            FixedGridLayoutManager gridLayoutManager = new FixedGridLayoutManager();
+            gridLayoutManager.setTotalColumnCount(cursor.getColumnCount());
+            recyclerView.setLayoutManager(gridLayoutManager);
+            recyclerView.setAdapter(tableAdapter);
+        }
     }
 
-    public void setDatabase(String tableName, SQLiteDatabase database) {
+    /**
+     * @param tableName The name of table to use.
+     * @param database  The database to handle.
+     */
+    public void setTableFromDatabase(String tableName, SQLiteDatabase database) {
         this.tableName = tableName;
         this.database = database;
     }
 
-    @Override
-    public void cleanup() {
-        database = null;
-        Debugger.getInstance().dispose(tableName + "-Table");
+    /**
+     * Sets how many characters we care about in each row. If its any longer, we truncate the string.
+     *
+     * @param maxCharacterCount The count of characters per column in row
+     */
+    public void setMaxCharacterCount(int maxCharacterCount) {
+        this.maxCharacterCount = maxCharacterCount;
     }
 
-    final View.OnClickListener onClickListener = new View.OnClickListener() {
+    @Override
+    public void cleanup() {
+        Debugger.getInstance().disposeQuietly(tableName + "-Table");
+    }
+
+    private final View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             int position = (int) v.getTag();
             Cursor currentRow = tableAdapter.getCursor();
-            Map<String, Column> columnMap = DatabaseCritterUtils.getDbRowMap(currentRow, position);
+            Map<String, Column> columnMap = DatabaseCritterUtils.getDbRowMap(database, tableName, currentRow, position);
 
             RowCritter rowCritter = new RowCritter();
             rowCritter.setColumnDataMap(tableName, database, columnMap);
@@ -94,7 +110,11 @@ public class TableCritter implements Critter {
 
     private class TableAdapter extends RecyclerView.Adapter<TableAdapter.ViewHolder> {
 
-        private Cursor cursor;
+        private final Cursor cursor;
+
+        private final int columnCount;
+
+        private final String[] columnNames;
 
         public Cursor getCursor() {
             return cursor;
@@ -102,38 +122,35 @@ public class TableCritter implements Critter {
 
         public TableAdapter(Context context, Cursor c) {
             cursor = c;
+            columnCount = c.getColumnCount();
+            columnNames = c.getColumnNames();
         }
 
         @Override
         public int getItemCount() {
-            return cursor.getCount() + 1;
+            return (cursor.getCount() + 1) * columnCount;
         }
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-            return new ViewHolder(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.list_item_table_row, viewGroup, false));
+            return new ViewHolder(
+                    LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.list_item_table_row, viewGroup,
+                                                                        false));
         }
 
         @Override
         public void onBindViewHolder(ViewHolder viewHolder, int position) {
-            viewHolder.contentArea.setTag(position);
-            viewHolder.contentArea.setOnClickListener(onClickListener);
-            viewHolder.contentArea.removeAllViews();
-            if (position == 0) {
-                String[] columns = cursor.getColumnNames();
-                for (String column : columns) {
-                    TextView valueDisplay = new TextView(viewHolder.itemView.getContext());
-                    valueDisplay.setText(column);
-                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
-                    params.weight = 1;
-                    valueDisplay.setLayoutParams(params);
-                    viewHolder.contentArea.addView(valueDisplay);
-                }
-            } else if (cursor.moveToPosition(position + 1)) {
-                String[] columns = cursor.getColumnNames();
-                for (String column : columns) {
-                    TextView valueDisplay = new TextView(viewHolder.itemView.getContext());
-                    int index = cursor.getColumnIndex(column);
+            int columnPosition = position % columnCount;
+            if (position < columnCount) {
+                viewHolder.contentArea.setText(columnNames[columnPosition]);
+            } else {
+                viewHolder.contentArea.setOnClickListener(onClickListener);
+
+                int cursorPosition = position / columnCount - 1;
+                viewHolder.contentArea.setTag(cursorPosition - 1);
+                if (cursor.moveToPosition(cursorPosition)) {
+                    String currentColumn = columnNames[columnPosition];
+                    int index = cursor.getColumnIndex(currentColumn);
                     int type = cursor.getType(index);
                     Object value = null;
                     switch (type) {
@@ -153,24 +170,24 @@ public class TableCritter implements Critter {
                         default:
                             break;
                     }
-
-                    valueDisplay.setText(String.valueOf(value));
-                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
-                    params.weight = 1;
-                    valueDisplay.setLayoutParams(params);
-                    viewHolder.contentArea.addView(valueDisplay);
+                    // limit to characters specified.
+                    String display = String.valueOf(value);
+                    viewHolder.contentArea.setText(
+                            display.length() < maxCharacterCount ? display : display.substring(0, maxCharacterCount));
+                } else {
+                    viewHolder.contentArea.setText("ERROR");
                 }
             }
         }
 
         class ViewHolder extends RecyclerView.ViewHolder {
 
-            LinearLayout contentArea;
+            TextView contentArea;
 
             public ViewHolder(View itemView) {
                 super(itemView);
 
-                contentArea = (LinearLayout) itemView;
+                contentArea = (TextView) itemView;
             }
         }
     }

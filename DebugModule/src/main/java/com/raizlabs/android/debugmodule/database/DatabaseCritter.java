@@ -4,7 +4,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.LayoutRes;
 import android.support.v4.app.FragmentActivity;
-import android.util.TypedValue;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -86,7 +86,7 @@ public class DatabaseCritter implements Critter {
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             String tableName = adapter.getItem(position);
             TableCritter tableCritter = new TableCritter();
-            tableCritter.setDatabase(tableName, database);
+            tableCritter.setTableFromDatabase(tableName, database);
             Debugger.getInstance().use(tableName + "-Table", tableCritter);
 
             DebugCritterFragment debugCritterFragment = DebugCritterFragment.newInstance(tableName + "-Table", layoutRes);
@@ -107,7 +107,7 @@ public class DatabaseCritter implements Critter {
         private ArrayList<String> tables = new ArrayList<>();
 
         public void setDatabase(SQLiteDatabase database, boolean useBlackList) {
-            tables = DatabaseCritterUtils.getDbTableDetails(database, useBlackList);
+            tables = DatabaseCritterUtils.getTableNames(database, useBlackList);
 
             // sort
             Collections.sort(tables);
@@ -133,8 +133,7 @@ public class DatabaseCritter implements Critter {
         public View getView(int position, View convertView, ViewGroup parent) {
             TextView name;
             if (convertView == null) {
-                name = new TextView(parent.getContext());
-                name.setTextSize(TypedValue.COMPLEX_UNIT_PX, parent.getResources().getDimension(R.dimen.DebugModule_TextSize_Title));
+                name = (TextView) LayoutInflater.from(parent.getContext()).inflate(R.layout.view_debug_module_table_row, parent, false);
             } else {
                 name = (TextView) convertView;
             }
