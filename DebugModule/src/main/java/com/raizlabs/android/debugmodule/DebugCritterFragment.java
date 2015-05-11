@@ -27,7 +27,7 @@ public class DebugCritterFragment extends Fragment {
         return debugCritterFragment;
     }
 
-    private Critter mCritter;
+    private Critter critter;
 
     private int layoutRes;
 
@@ -40,8 +40,8 @@ public class DebugCritterFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         String critterName = getTitle();
-        mCritter = Debugger.getInstance().getCritter(critterName);
-        if(mCritter == null) {
+        critter = Debugger.getInstance().getCritter(critterName);
+        if(critter == null) {
             throw new IllegalStateException("Critter passed no longer exists. Please reload the screen");
         }
 
@@ -58,14 +58,14 @@ public class DebugCritterFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(mCritter.getLayoutResId(), container, false);
+        return inflater.inflate(critter.getLayoutResId(), container, false);
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mCritter.handleView(layoutRes, view);
+        critter.handleView(layoutRes, view);
 
         Debugger.getInstance().registerCritterRemoveListener(mRemoveListener);
     }
@@ -74,16 +74,16 @@ public class DebugCritterFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
 
-        mCritter.cleanup();
+        critter.cleanup();
         Debugger.getInstance().unregisterCritterRemoveListener(mRemoveListener);
     }
 
     private final Debugger.CritterRemoveListener mRemoveListener = new Debugger.CritterRemoveListener() {
         @Override
         public void onCritterRemoved(Critter critter) {
-            if(mCritter.equals(critter) && getActivity() != null && !getActivity().isFinishing()) {
+            if(DebugCritterFragment.this.critter.equals(critter) && getActivity() != null && !getActivity().isFinishing()) {
                 // no longer valid we exit this screen
-                mCritter.cleanup();
+                DebugCritterFragment.this.critter.cleanup();
                 getActivity().getSupportFragmentManager().popBackStack();
             }
         }

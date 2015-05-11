@@ -14,7 +14,7 @@ public interface Critter extends Serializable {
     /**
      * @return the layout to inflate in the menu when the user clicks on its option.
      */
-    public int getLayoutResId();
+    int getLayoutResId();
 
     /**
      * The layout for this critter has been created. Perform any logic you need
@@ -22,10 +22,10 @@ public interface Critter extends Serializable {
      * @param layoutResource The top-level layout resource
      * @param view           The view to handle post-inflation
      */
-    public void handleView(@LayoutRes int layoutResource, View view);
+    void handleView(@LayoutRes int layoutResource, View view);
 
     /**
      * Release any unused resources here.
      */
-    public void cleanup();
+    void cleanup();
 }

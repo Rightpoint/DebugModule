@@ -46,15 +46,15 @@ public class UrlCritter implements Critter {
     }
 
 
-    private ViewHolder mViewHolder;
+    private ViewHolder viewHolder;
 
-    private String mBaseUrl;
+    private String baseUrl;
 
-    private List<UrlChangeListener> mUrlChangeListeners;
+    private List<UrlChangeListener> urlChangeListeners;
 
-    private transient UrlManager mPrefs;
+    private transient UrlManager urlManager;
 
-    UrlAdapter mAdapter;
+    UrlAdapter adapter;
 
     /**
      * Constructs this class with the specified URL as a base url. We will allow the user to change URLS in the app.
@@ -64,9 +64,9 @@ public class UrlCritter implements Critter {
      * @param context
      */
     public UrlCritter(String baseUrlString, Context context) {
-        mBaseUrl = baseUrlString;
-        mPrefs = new UrlManager(context);
-        mUrlChangeListeners = new ArrayList<>();
+        baseUrl = baseUrlString;
+        urlManager = new UrlManager(context);
+        urlChangeListeners = new ArrayList<>();
     }
 
     /**
@@ -78,10 +78,10 @@ public class UrlCritter implements Critter {
      */
     @SuppressWarnings("unchecked")
     public UrlCritter addUrl(String url, Context context) {
-        List<String> urls = mPrefs.getUrls(context);
+        List<String> urls = urlManager.getUrls(context);
         if (!urls.contains(url)) {
             urls.add(url);
-            mPrefs.saveUrls(context, urls);
+            urlManager.saveUrls(context, urls);
         }
         return this;
     }
@@ -94,13 +94,13 @@ public class UrlCritter implements Critter {
      * @return This instance for chaining
      */
     public UrlCritter addUrlList(List<String> urls, Context context) {
-        List<String> savedUrls = mPrefs.getUrls(context);
+        List<String> savedUrls = urlManager.getUrls(context);
         for (String url : urls) {
             if (!savedUrls.contains(url)) {
                 savedUrls.add(url);
             }
         }
-        mPrefs.saveUrls(context, savedUrls);
+        urlManager.saveUrls(context, savedUrls);
         return this;
     }
 
@@ -112,13 +112,13 @@ public class UrlCritter implements Critter {
      * @return This instance for chaining
      */
     public UrlCritter addUrls(Context context, String... urls) {
-        List<String> savedUrls = mPrefs.getUrls(context);
+        List<String> savedUrls = urlManager.getUrls(context);
         for (String url : urls) {
             if (!savedUrls.contains(url)) {
                 savedUrls.add(url);
             }
         }
-        mPrefs.saveUrls(context, savedUrls);
+        urlManager.saveUrls(context, savedUrls);
         return this;
     }
 
@@ -130,7 +130,7 @@ public class UrlCritter implements Critter {
      * @return This instance for chaining
      */
     public UrlCritter addUrlTypedArray(TypedArray typedArray, Context context) {
-        List<String> savedUrls = mPrefs.getUrls(context);
+        List<String> savedUrls = urlManager.getUrls(context);
 
         int length = typedArray.length();
         for (int i = 0; i < length; i++) {
@@ -139,7 +139,7 @@ public class UrlCritter implements Critter {
                 savedUrls.add(url);
             }
         }
-        mPrefs.saveUrls(context, savedUrls);
+        urlManager.saveUrls(context, savedUrls);
         return this;
     }
 
@@ -161,8 +161,8 @@ public class UrlCritter implements Critter {
 
     @Override
     public void handleView(@LayoutRes int layoutResource, View view) {
-        mViewHolder = new ViewHolder(view);
-        mViewHolder.setupHolder(view.getContext());
+        viewHolder = new ViewHolder(view);
+        viewHolder.setupHolder(view.getContext());
     }
 
     @Override
@@ -174,7 +174,7 @@ public class UrlCritter implements Critter {
      * Clears all URL data from disk
      */
     public void clearData(Context context) {
-        mPrefs.clear(context);
+        urlManager.clear(context);
     }
 
     /**
@@ -183,8 +183,8 @@ public class UrlCritter implements Critter {
      * @param urlChangeListener The listener that gets called back
      */
     public void registerUrlChangeListener(UrlChangeListener urlChangeListener) {
-        if (!mUrlChangeListeners.contains(urlChangeListener)) {
-            mUrlChangeListeners.add(urlChangeListener);
+        if (!urlChangeListeners.contains(urlChangeListener)) {
+            urlChangeListeners.add(urlChangeListener);
         }
     }
 
@@ -194,14 +194,14 @@ public class UrlCritter implements Critter {
      * @param urlChangeListener The listener to remove
      */
     public void removeUrlChangeListener(UrlChangeListener urlChangeListener) {
-        mUrlChangeListeners.remove(urlChangeListener);
+        urlChangeListeners.remove(urlChangeListener);
     }
 
     /**
      * @return the current url to use for this application.
      */
     public String getCurrentUrl() {
-        return mPrefs.getCurrentUrl(mBaseUrl);
+        return urlManager.getCurrentUrl(baseUrl);
     }
 
     public class ViewHolder {
@@ -222,23 +222,23 @@ public class UrlCritter implements Critter {
         }
 
         void setupHolder(Context context) {
-            mAdapter = new UrlAdapter(context);
+            adapter = new UrlAdapter(context);
 
             // prefill with current base url option
-            addUrlOption.setText(mAdapter.getItem(mAdapter.mUrls.indexOf(getCurrentUrl())));
-            storedUrlSpinner.setAdapter(mAdapter);
-            storedUrlSpinner.setSelection(mAdapter.mUrls.indexOf(getCurrentUrl()));
+            addUrlOption.setText(adapter.getItem(adapter.mUrls.indexOf(getCurrentUrl())));
+            storedUrlSpinner.setAdapter(adapter);
+            storedUrlSpinner.setSelection(adapter.mUrls.indexOf(getCurrentUrl()));
             storedUrlSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 boolean isFirst = true;
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                     if(!isFirst) {
-                        String url = mAdapter.getItem(position);
-                        mPrefs.setCurrentUrl(url);
+                        String url = adapter.getItem(position);
+                        urlManager.setCurrentUrl(url);
                         Toast.makeText(view.getContext(), "Now using " + url, Toast.LENGTH_SHORT).show();
 
-                        if (mUrlChangeListeners != null) {
-                            for (UrlChangeListener listener : mUrlChangeListeners) {
+                        if (urlChangeListeners != null) {
+                            for (UrlChangeListener listener : urlChangeListeners) {
                                 listener.onUrlChanged(url);
                             }
                         }
@@ -259,13 +259,13 @@ public class UrlCritter implements Critter {
                     if (!Patterns.WEB_URL.matcher(url).matches()) {
                         Toast.makeText(v.getContext(), "Please enter a valid base url", Toast.LENGTH_SHORT).show();
                     } else if (!url.isEmpty()) {
-                        if(!mPrefs.getUrls(v.getContext()).contains(url)) {
+                        if(!urlManager.getUrls(v.getContext()).contains(url)) {
                             Toast.makeText(v.getContext(), "Added " + url + " to list", Toast.LENGTH_SHORT).show();
                         } else {
                             Toast.makeText(v.getContext(), "Duplicate URL entered", Toast.LENGTH_SHORT).show();
                         }
                         addUrl(url, v.getContext());
-                        mAdapter.refresh(v.getContext());
+                        adapter.refresh(v.getContext());
                     }
                 }
             });
@@ -278,8 +278,8 @@ public class UrlCritter implements Critter {
                             .setPositiveButton("yes", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    mPrefs.clear(v.getContext());
-                                    mAdapter.refresh(v.getContext());
+                                    urlManager.clear(v.getContext());
+                                    adapter.refresh(v.getContext());
                                 }
                             })
                             .setNegativeButton("no", new DialogInterface.OnClickListener() {
@@ -303,12 +303,12 @@ public class UrlCritter implements Critter {
 
         @SuppressWarnings("unchecked")
         public UrlAdapter(Context context) {
-            addUrl(mBaseUrl, context);
-            mUrls = mPrefs.getUrls(context);
+            addUrl(baseUrl, context);
+            mUrls = urlManager.getUrls(context);
         }
 
         public void refresh(Context context) {
-            mUrls = mPrefs.getUrls(context);
+            mUrls = urlManager.getUrls(context);
             notifyDataSetChanged();
         }
 

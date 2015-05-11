@@ -26,7 +26,7 @@ public class DebugMenuFragment extends Fragment {
         return debugMenuFragment;
     }
 
-    private CritterAdapter mAdapter;
+    private CritterAdapter adapter;
 
     private int getContainerResourceId() {
         return getArguments().getInt(ARG_CONTAINER_RESOURCE, R.id.view_debug_module_menu_drawer);
@@ -36,7 +36,7 @@ public class DebugMenuFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mAdapter = new CritterAdapter(Debugger.getInstance().getCritterMap());
+        adapter = new CritterAdapter(Debugger.getInstance().getCritterMap());
     }
 
     @Override
@@ -50,11 +50,11 @@ public class DebugMenuFragment extends Fragment {
 
         ListView listView = (ListView) view.findViewById(R.id.listView);
 
-        listView.setAdapter(mAdapter);
+        listView.setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String key = mAdapter.getItem(position);
+                String key = adapter.getItem(position);
                 DebugCritterFragment critterFragment = DebugCritterFragment.newInstance(key, getContainerResourceId());
                 getFragmentManager().beginTransaction()
                         .replace(getContainerResourceId(), critterFragment)
@@ -74,8 +74,8 @@ public class DebugMenuFragment extends Fragment {
     private final Debugger.CritterRemoveListener mRemoveListener = new Debugger.CritterRemoveListener() {
         @Override
         public void onCritterRemoved(Critter critter) {
-            mAdapter.remove(Debugger.getInstance().getCritterName(critter));
-            mAdapter.notifyDataSetChanged();
+            adapter.remove(Debugger.getInstance().getCritterName(critter));
+            adapter.notifyDataSetChanged();
         }
     };
 }

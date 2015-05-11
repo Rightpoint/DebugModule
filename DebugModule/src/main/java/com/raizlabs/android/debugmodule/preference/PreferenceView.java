@@ -28,9 +28,9 @@ public class PreferenceView extends LinearLayout {
 
     Switch booleanSwitch;
 
-    PreferenceChangeListener mChangeListener;
+    PreferenceChangeListener preferenceChangeListener;
 
-    PreferenceBuilder mBuilder;
+    PreferenceBuilder preferenceBuilder;
 
     public PreferenceView(Context context) {
         super(context);
@@ -62,9 +62,10 @@ public class PreferenceView extends LinearLayout {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if(keyCode == KeyEvent.KEYCODE_ENTER) {
-                    if(mBuilder != null) {
+                    if(preferenceBuilder != null) {
                         try {
-                            mBuilder.applyPreference(mBuilder.toValue(valueChooser.getText().toString()), mChangeListener);
+                            preferenceBuilder.applyPreference(preferenceBuilder.toValue(valueChooser.getText().toString()),
+                                                     preferenceChangeListener);
                         } catch (NumberFormatException n) {
                             Toast.makeText(v.getContext(), n.getMessage(), Toast.LENGTH_SHORT).show();
                         }
@@ -79,11 +80,11 @@ public class PreferenceView extends LinearLayout {
     }
 
     void populate(PreferenceBuilder preference, PreferenceChangeListener changeListener) {
-        mBuilder = preference;
-        mChangeListener = changeListener;
+        preferenceBuilder = preference;
+        preferenceChangeListener = changeListener;
         title.setText(preference.getTitle());
 
-        if(mBuilder.getPrefType().equals(Boolean.class)) {
+        if(preferenceBuilder.getPrefType().equals(Boolean.class)) {
             valueChooser.setVisibility(GONE);
             booleanSwitch.setVisibility(VISIBLE);
 
@@ -93,9 +94,9 @@ public class PreferenceView extends LinearLayout {
             booleanSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    if(mBuilder != null && mBuilder.getPrefType().equals(Boolean.class)) {
+                    if(preferenceBuilder != null && preferenceBuilder.getPrefType().equals(Boolean.class)) {
                         try {
-                            mBuilder.applyPreference(isChecked, mChangeListener);
+                            preferenceBuilder.applyPreference(isChecked, preferenceChangeListener);
                         } catch (NumberFormatException n) {
                             Toast.makeText(buttonView.getContext(), n.getMessage(), Toast.LENGTH_SHORT).show();
                         }
