@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Description:
+ * Description: Provides utility methods for databases in this module.
  */
 public class DatabaseCritterUtils {
 
@@ -21,7 +21,12 @@ public class DatabaseCritterUtils {
         add("sqlite_sequence");
     }};
 
-    public static ArrayList<String> getDbTableDetails(SQLiteDatabase db, boolean useBlackList) {
+    /**
+     * @param db           The database to load and get table names from.
+     * @param useBlackList If we use the blacklist, we ignore internal system tables.
+     * @return list of table names.
+     */
+    public static ArrayList<String> getTableNames(SQLiteDatabase db, boolean useBlackList) {
         Cursor c = db.rawQuery(
                 "SELECT name FROM sqlite_master WHERE type='table'", null);
         ArrayList<String> result = new ArrayList<>();
@@ -36,6 +41,13 @@ public class DatabaseCritterUtils {
         return result;
     }
 
+    /**
+     * @param database  The database to use.
+     * @param tableName The name of table.
+     * @param cursor    The cursor we're retrieving data from.
+     * @param position  The position of the cursor.
+     * @return the map of values between column names.
+     */
     public static Map<String, Column> getDbRowMap(SQLiteDatabase database, String tableName, Cursor cursor,
                                                   int position) {
         Map<String, Column> data = new HashMap<>();
@@ -76,7 +88,7 @@ public class DatabaseCritterUtils {
                 int index = cursor.getColumnIndex(column);
                 Column columnObject = data.get(column);
                 Object value = null;
-                if(!cursor.isNull(index)) {
+                if (!cursor.isNull(index)) {
                     if (columnObject.columnType == byte[].class) {
                         value = cursor.getBlob(index);
                     } else if (columnObject.columnType == Float.class) {
@@ -93,6 +105,10 @@ public class DatabaseCritterUtils {
         return data;
     }
 
+    /**
+     * @param columnMap The map of column to content values.
+     * @return A {@link ContentValues} from map of data.
+     */
     public static ContentValues toContentValues(Map<String, Column> columnMap) {
         ContentValues contentValues = new ContentValues();
         Set<String> columnNames = columnMap.keySet();
@@ -103,6 +119,10 @@ public class DatabaseCritterUtils {
         return contentValues;
     }
 
+    /**
+     * @param columnMap The map of column names to values.
+     * @return A WHERE query for specified data.
+     */
     public static String toWhere(Map<String, Column> columnMap) {
         StringBuilder where = new StringBuilder();
         List<String> columnNames = new ArrayList<>(columnMap.keySet());

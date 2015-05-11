@@ -25,7 +25,7 @@ import static android.database.Cursor.FIELD_TYPE_NULL;
 import static android.database.Cursor.FIELD_TYPE_STRING;
 
 /**
- * Description:
+ * Description: Displays a table from the {@link DatabaseCritter}
  */
 public class TableCritter implements Critter {
 
@@ -51,7 +51,7 @@ public class TableCritter implements Critter {
         layoutRes = layoutResource;
         recyclerView = (RecyclerView) view.findViewById(R.id.view_debug_module_table_list);
 
-        if(database != null) {
+        if (database != null) {
             Cursor cursor = database.query(tableName, null, null, null, null, null, null);
             tableAdapter = new TableAdapter(view.getContext(), cursor);
             FixedGridLayoutManager gridLayoutManager = new FixedGridLayoutManager();
@@ -61,7 +61,11 @@ public class TableCritter implements Critter {
         }
     }
 
-    public void setDatabase(String tableName, SQLiteDatabase database) {
+    /**
+     * @param tableName The name of table to use.
+     * @param database  The database to handle.
+     */
+    public void setTableFromDatabase(String tableName, SQLiteDatabase database) {
         this.tableName = tableName;
         this.database = database;
     }
@@ -80,7 +84,7 @@ public class TableCritter implements Critter {
         Debugger.getInstance().disposeQuietly(tableName + "-Table");
     }
 
-    final View.OnClickListener onClickListener = new View.OnClickListener() {
+    private final View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             int position = (int) v.getTag();
@@ -136,15 +140,15 @@ public class TableCritter implements Critter {
 
         @Override
         public void onBindViewHolder(ViewHolder viewHolder, int position) {
-            int columnPosition = position%columnCount;
+            int columnPosition = position % columnCount;
             if (position < columnCount) {
                 viewHolder.contentArea.setText(columnNames[columnPosition]);
             } else {
                 viewHolder.contentArea.setOnClickListener(onClickListener);
 
-                int cursorPosition = position/columnCount - 1;
-                viewHolder.contentArea.setTag(cursorPosition-1);
-                if(cursor.moveToPosition(cursorPosition)) {
+                int cursorPosition = position / columnCount - 1;
+                viewHolder.contentArea.setTag(cursorPosition - 1);
+                if (cursor.moveToPosition(cursorPosition)) {
                     String currentColumn = columnNames[columnPosition];
                     int index = cursor.getColumnIndex(currentColumn);
                     int type = cursor.getType(index);

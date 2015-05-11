@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Description:
+ * Description: Displays a row in editable format.
  */
 public class RowCritter implements Critter {
 
@@ -31,11 +31,12 @@ public class RowCritter implements Critter {
          *
          * @param column The column changed.
          */
-        public void onColumnChanged(Column column);
+        void onColumnChanged(Column column);
     }
 
-    LinearLayout rowLayout;
-    Button saveButton;
+    private LinearLayout rowLayout;
+    private Button saveButton;
+
     private Map<String, Column> columnDataMap;
     private Map<String, Column> originalColumnMap;
     private List<String> columnNameSet;
@@ -63,12 +64,19 @@ public class RowCritter implements Critter {
         }
     }
 
-    public void setColumnDataMap(String tableName, SQLiteDatabase database, Map<String, Column> map) {
+    /**
+     * Sets the data that we will display in this {@link Critter}
+     *
+     * @param tableName The name of the table to display.
+     * @param database  The database to use.
+     * @param map       The map of data for a specific row.
+     */
+    void setColumnDataMap(String tableName, SQLiteDatabase database, Map<String, Column> map) {
         this.tableName = tableName;
         this.database = database;
         Set<String> keys = map.keySet();
         columnDataMap = new HashMap<>();
-        for(String key: keys) {
+        for (String key : keys) {
             Column column = new Column(map.get(key));
             columnDataMap.put(key, column);
         }
@@ -81,23 +89,28 @@ public class RowCritter implements Critter {
         columnDataMap = null;
     }
 
-    ColumnChangeListener changeListener = new ColumnChangeListener() {
+    private final ColumnChangeListener changeListener = new ColumnChangeListener() {
         @Override
         public void onColumnChanged(Column column) {
             columnDataMap.put(column.columnName, column);
         }
     };
 
-    View.OnClickListener clickListener = new View.OnClickListener() {
+    private final View.OnClickListener clickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             ContentValues contentValues = DatabaseCritterUtils.toContentValues(columnDataMap);
-            int count = database.updateWithOnConflict(tableName, contentValues, DatabaseCritterUtils.toWhere(originalColumnMap), null, SQLiteDatabase.CONFLICT_FAIL);
+            int count = database.updateWithOnConflict(tableName, contentValues,
+                                                      DatabaseCritterUtils.toWhere(originalColumnMap), null,
+                                                      SQLiteDatabase.CONFLICT_FAIL);
             Toast.makeText(v.getContext(), count == 1 ? "Row updated successfully" :
                     (count > 1 ? "Update touched more than one row" : "Row update failed"), Toast.LENGTH_SHORT).show();
         }
     };
 
+    /**
+     * Displays row editing on screen.
+     */
     private class RowEditAdapter extends BaseAdapter {
 
         @Override
