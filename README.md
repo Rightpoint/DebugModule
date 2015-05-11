@@ -1,4 +1,4 @@
-[![Raizlabs Repository](http://img.shields.io/badge/Raizlabs%20Repository-2.0.0-blue.svg?style=flat)](https://github.com/Raizlabs/maven-releases)
+[![Raizlabs Repository](http://img.shields.io/badge/Raizlabs%20Repository-2.1.0-blue.svg?style=flat)](https://github.com/Raizlabs/maven-releases)
 
 # DebugModule
 
@@ -18,7 +18,7 @@ Add the library to the project-level build.gradle, using the
   apply plugin: 'com.raizlabs.griddle'
 
   dependencies {
-    mod 'com.raizlabs.android:DebugModule:2.0.0'
+    mod 'com.raizlabs.android:DebugModule:2.1.0', 'debugCompile`
   }
 
 ```
@@ -28,7 +28,7 @@ or by standard Gradle use (without linking sources support):
 ```groovy
 
   dependencies {
-    compile "com.raizlabs.android:DebugModule:2.0.0"
+    debugCompile "com.raizlabs.android:DebugModule:2.1.0"
   }
 
 ```
